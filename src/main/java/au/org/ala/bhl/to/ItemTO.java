@@ -1,0 +1,100 @@
+package au.org.ala.bhl.to;
+
+import java.sql.Date;
+
+import au.org.ala.bhl.MappingInfo;
+
+public class ItemTO {
+
+    private String primaryTitleId;
+    private String itemId;
+    private String internetArchiveId;
+    private String title;
+    private String volume;
+    private String localCacheFile;
+    private String status;
+    private Date lastModified;
+    private int pageCount;
+    
+    public String getPrimaryTitleId() {
+        return primaryTitleId;
+    }
+
+    @MappingInfo(column="PrimaryTitleID")
+    public void setPrimaryTitleId(String primaryTitleId) {
+        this.primaryTitleId = primaryTitleId;
+    }
+    
+    public String getItemId() {
+        return itemId;
+    }
+    
+    @MappingInfo(column="ItemId")
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    public String getInternetArchiveId() {
+        return internetArchiveId;
+    }
+
+    @MappingInfo(column="IACode")
+    public void setInternetArchiveId(String internetArchiveId) {
+        this.internetArchiveId = internetArchiveId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    @MappingInfo(column="Title")
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getVolume() {
+        return volume;
+    }
+
+    @MappingInfo(column="Volume")
+    public void setVolume(String volume) {
+        this.volume = volume;
+    }
+
+    public String getLocalCacheFile() {
+        return localCacheFile;
+    }
+
+    @MappingInfo(column="LocalCacheFile")
+    public void setLocalCacheFile(String localCacheFile) {
+        this.localCacheFile = localCacheFile;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    @MappingInfo(column="Status")
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    @MappingInfo(column="DateModified")
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
+        
+    public int getPageCount() {
+        return pageCount;
+    }
+    
+    @MappingInfo(column="PageCount")
+    public void setPageCount(int pageCount) {
+        this.pageCount = pageCount;
+    }
+
+}

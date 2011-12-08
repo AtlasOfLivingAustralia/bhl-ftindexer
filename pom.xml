@@ -31,7 +31,7 @@
               <descriptors>
                 <descriptor>mega-jar-assembly.xml</descriptor>
               </descriptors>
-              <finalName>ft-indexer-full.jar</finalName>
+              <finalName>ft-indexer.jar</finalName>
               <appendAssemblyId>true</appendAssemblyId>
             </configuration>
           </execution>

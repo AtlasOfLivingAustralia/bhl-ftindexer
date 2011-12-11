@@ -9,6 +9,8 @@ public class IndexerOptions {
     private String _docCachePath;
     private String _solrServerUrl;
     
+    private String _outputFile;
+    
     private int _retrieveThreads;
     private int _indexingThreads;
     
@@ -22,6 +24,8 @@ public class IndexerOptions {
         _solrServerUrl = line.getOptionValue("solrserver", "http://localhost:8983/solr");
         _retrieveThreads = Integer.parseInt(line.getOptionValue("retrievethreads", "20"));
         _indexingThreads = Integer.parseInt(line.getOptionValue("indexingthreads", "1"));
+        
+        _outputFile = line.getOptionValue("o", "out.txt");
     }
     
     
@@ -71,6 +75,14 @@ public class IndexerOptions {
     
     public void setIndexerThreadCount(int count) {
         _indexingThreads = count;
+    }
+    
+    public String getOutputFile() {
+    	return _outputFile;
+    }
+    
+    public void setOutputFile(String outputFile) {
+    	_outputFile = outputFile;    			
     }
 
 }

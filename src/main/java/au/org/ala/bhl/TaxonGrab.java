@@ -39,10 +39,14 @@ public class TaxonGrab {
         ACCENTS = createSubstList(SUBST("á", "a"), SUBST("é", "e"), SUBST("í", "i"), SUBST("ó", "o"), SUBST("ú", "u"));
         SYMBOLS = createSubstList(SUBST(" -\r", " - "), SUBST(" -\n", " - "), SUBST("-\r", ""), SUBST("-\n", ""), SUBST("\r", " "), SUBST("\t", ""), SUBST(":", " "), SUBST(";", " "), SUBST(".", ". "));
     }
+    
+    private Set<String> _lexicon;
+    
+    public TaxonGrab() {
+    	_lexicon = loadLexicon();    	
+    }
 
     public List<String> findNames(String text) {
-
-        Set<String> lexicon = loadLexicon();
         
         String[] tokens = normalizeText(text, SYMBOLS).split(" ");
 
@@ -55,7 +59,7 @@ public class TaxonGrab {
         
         SearchState state = new SearchState();
         for (String word : words) {
-            analyse(word, lexicon, state);
+            analyse(word, _lexicon, state);
         }
 
         return new ArrayList<String>(state.Taxa);
@@ -94,7 +98,10 @@ public class TaxonGrab {
                 } else if (!StringUtils.isEmpty(state.F_Word) && !StringUtils.isEmpty(state.S_Word) && word.length() > 2) {
                     word = word.replace(",", "");
                     if (pat_var_spec.matcher(word).find()) {
-                        state.Taxa.pop();
+                    	if (state.Taxa.size() > 0) {
+                    		state.Taxa.pop();
+                    	}
+                    	
                         if (par_subvar.matcher(word).find()) {
                             state.CurrentFullName = state.F_Word + " " + state.S_Word + " " + word;
                         } else if (!pat_dot.matcher(word).find()) {

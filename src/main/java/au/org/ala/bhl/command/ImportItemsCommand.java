@@ -14,12 +14,12 @@ import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemsFileHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
-import au.org.ala.bhl.service.ItemSourceService;
+import au.org.ala.bhl.service.ItemsService;
 
 @Command(name = "import-items")
 public class ImportItemsCommand extends AbstractCommand {
 
-    public void execute(final ItemSourceService service, final IndexerOptions options) throws Exception {
+    public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
         
         if (StringUtils.isEmpty(options.getSourceFilename())) {
             throw new RuntimeException("No value for source file argument!");            
@@ -67,11 +67,11 @@ public class ImportItemsCommand extends AbstractCommand {
     class ItemImporter implements ItemsFileHandler {
         
         private DocumentCacheService _docCache;
-        private ItemSourceService _service;
+        private ItemsService _service;
         
         private int _itemCount;
         
-        public ItemImporter(ItemSourceService service, DocumentCacheService docCache) {
+        public ItemImporter(ItemsService service, DocumentCacheService docCache) {
             _service = service;
             _docCache = docCache;
             _itemCount = 0;

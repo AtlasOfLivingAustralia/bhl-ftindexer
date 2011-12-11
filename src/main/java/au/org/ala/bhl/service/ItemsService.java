@@ -11,9 +11,9 @@ import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.ReflectiveMapper;
 import au.org.ala.bhl.to.ItemTO;
 
-public class ItemSourceService extends H2Service {
+public class ItemsService extends H2Service {
 
-    public ItemSourceService() {
+    public ItemsService() {
         super("J:\\ItemSource");
     }
 

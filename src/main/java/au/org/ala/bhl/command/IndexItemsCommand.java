@@ -11,7 +11,7 @@ import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.policy.DefaultRetrievePolicy;
 import au.org.ala.bhl.policy.ItemRetrievePolicy;
 import au.org.ala.bhl.service.DocumentCacheService;
-import au.org.ala.bhl.service.ItemSourceService;
+import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
 @Command(name = "index-items")
@@ -21,7 +21,7 @@ public class IndexItemsCommand extends AbstractCommand {
 
     private static ItemRetrievePolicy _retrievePolicy = new DefaultRetrievePolicy();
 
-    public void execute(final ItemSourceService service, final IndexerOptions indexerOptions) throws Exception {
+    public void execute(final ItemsService service, final IndexerOptions indexerOptions) throws Exception {
 
         final DocumentCacheService docCache = new DocumentCacheService(indexerOptions.getDocCachePath());
 

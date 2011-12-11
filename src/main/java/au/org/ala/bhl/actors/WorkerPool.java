@@ -5,6 +5,7 @@ import akka.actor.ActorRef;
 import akka.actor.Actors;
 import akka.actor.UntypedActor;
 import akka.actor.UntypedActorFactory;
+import akka.routing.Routing;
 
 public abstract class WorkerPool<T extends Actor> extends AbstractBHLActor {
     
@@ -37,12 +38,13 @@ public abstract class WorkerPool<T extends Actor> extends AbstractBHLActor {
     
     @Override
     public void postStop() {
+    	_router.tell(new Routing.Broadcast(Actors.poisonPill()));
         _router.stop();
     }
         
     @Override
     public void onReceive(Object message) throws Exception {
-        _router.tell(message);        
+        _router.tell(message);     
     }
         
     protected abstract T createWorker();

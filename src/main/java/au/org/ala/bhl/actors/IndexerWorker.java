@@ -12,6 +12,7 @@ import org.apache.solr.common.SolrInputDocument;
 
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
+import au.org.ala.bhl.messages.IndexText;
 
 public class IndexerWorker extends AbstractBHLActor {
 

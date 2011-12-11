@@ -1,4 +1,4 @@
-package au.org.ala.bhl.actors;
+package au.org.ala.bhl.messages;
 
 import au.org.ala.bhl.IndexingController;
 

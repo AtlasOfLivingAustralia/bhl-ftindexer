@@ -1,11 +1,11 @@
 package au.org.ala.bhl.actors;
 
 
-public class ItemRetriever extends WorkerPool<RetrieveItemWorker> {
+public class ItemRetrieverPool extends WorkerPool<RetrieveItemWorker> {
     
     private String _docCachePath;
 
-    public ItemRetriever(int workerCount, String docCachePath) {
+    public ItemRetrieverPool(int workerCount, String docCachePath) {
         super(workerCount);
         _docCachePath = docCachePath;
     }

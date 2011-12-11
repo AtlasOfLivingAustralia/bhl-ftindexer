@@ -11,13 +11,13 @@ import au.org.ala.bhl.Command;
 import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
-import au.org.ala.bhl.service.ItemSourceService;
+import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
 @Command(name = "stats")
 public class StatisticsCommand extends AbstractCommand {
 
-    public void execute(final ItemSourceService service, final IndexerOptions options) throws Exception {
+    public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
         StatsCounter counter = new StatsCounter(options);
         service.forAllItems(counter);
         counter.dump();

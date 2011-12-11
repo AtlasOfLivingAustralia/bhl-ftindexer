@@ -11,108 +11,110 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.bhl.command.CommandLineCommand;
-import au.org.ala.bhl.command.GeneratePageXMLCommand;
+import au.org.ala.bhl.command.ExtractNamesCommand;
 import au.org.ala.bhl.command.ImportItemsCommand;
 import au.org.ala.bhl.command.IndexItemsCommand;
 import au.org.ala.bhl.command.MaintainCacheCommand;
 import au.org.ala.bhl.command.RetrieveItemsCommand;
 import au.org.ala.bhl.command.StatisticsCommand;
-import au.org.ala.bhl.service.ItemSourceService;
+import au.org.ala.bhl.command.UpdateCacheControlCommand;
+import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.service.LogService;
 
 public class BHLIndexer {
 
-    private static Map<String, CommandLineCommand> _commandMap;
+	private static Map<String, CommandLineCommand> _commandMap;
 
-    static {
-        _commandMap = new HashMap<String, CommandLineCommand>();
-        registerCommand(ImportItemsCommand.class);
-        registerCommand(IndexItemsCommand.class);
-        registerCommand(GeneratePageXMLCommand.class);
-        registerCommand(MaintainCacheCommand.class);
-        registerCommand(StatisticsCommand.class);
-        // registerCommand(PaginateDocCacheCommand.class);
-        registerCommand(RetrieveItemsCommand.class);
-    }
+	static {
+		_commandMap = new HashMap<String, CommandLineCommand>();
+		registerCommand(ImportItemsCommand.class);
+		registerCommand(IndexItemsCommand.class);
+		registerCommand(MaintainCacheCommand.class);
+		registerCommand(StatisticsCommand.class);
+		// registerCommand(PaginateDocCacheCommand.class);
+		registerCommand(RetrieveItemsCommand.class);
+		registerCommand(ExtractNamesCommand.class);
+		registerCommand(UpdateCacheControlCommand.class);
+	}
 
-    private static void registerCommand(Class<? extends CommandLineCommand> clazz) {
-        Command cmd = clazz.getAnnotation(Command.class);
-        if (cmd != null) {
-            try {
-                CommandLineCommand impl = clazz.newInstance();
-                _commandMap.put(cmd.name(), impl);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        } else {
-            throw new RuntimeException("Failed to register command class (No annotation!): " + clazz.getName());
-        }
-    }
+	private static void registerCommand(Class<? extends CommandLineCommand> clazz) {
+		Command cmd = clazz.getAnnotation(Command.class);
+		if (cmd != null) {
+			try {
+				CommandLineCommand impl = clazz.newInstance();
+				_commandMap.put(cmd.name(), impl);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		} else {
+			throw new RuntimeException("Failed to register command class (No annotation!): " + clazz.getName());
+		}
+	}
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) throws Exception {
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) throws Exception {
 
-        CommandLineParser parser = new GnuParser();
+		CommandLineParser parser = new GnuParser();
 
-        Options options = defineOptions();
+		Options options = defineOptions();
 
-        CommandLine line = parser.parse(options, args);
+		CommandLine line = parser.parse(options, args);
 
-        if (line.getArgs().length != 1) {
-            usage(options);
-            System.exit(1);
-        }
+		if (line.getArgs().length != 1) {
+			usage(options);
+			System.exit(1);
+		}
 
-        String cmdStr = line.getArgs()[0];
-        if (_commandMap.containsKey(cmdStr)) {
-            log("Processing command: %s", cmdStr);
-            try {
-                ItemSourceService service = new ItemSourceService();
-                IndexerOptions indexerOptions = new IndexerOptions(line);
-                dumpOptions(indexerOptions);
-                _commandMap.get(cmdStr).execute(service, indexerOptions);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-            log("Command complete: %s", cmdStr);
-        } else {
-            System.out.println(String.format("Unrecognized command: %s", cmdStr));
-            usage(options);
-            System.exit(1);
-        }
+		String cmdStr = line.getArgs()[0];
+		if (_commandMap.containsKey(cmdStr)) {
+			log("Processing command: %s", cmdStr);
+			try {
+				ItemsService service = new ItemsService();
+				IndexerOptions indexerOptions = new IndexerOptions(line);
+				dumpOptions(indexerOptions);
+				_commandMap.get(cmdStr).execute(service, indexerOptions);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+			log("Command complete: %s", cmdStr);
+		} else {
+			System.out.println(String.format("Unrecognized command: %s", cmdStr));
+			usage(options);
+			System.exit(1);
+		}
 
-    }
-    
-    private static void dumpOptions(IndexerOptions options) {
-        log("Local doc cache path: %s", options.getDocCachePath());
-        log("Indexer threads: %d", options.getIndexerThreadCount());
-        log("Retrieve threads: %d", options.getRetrieveThreadCount());
-        log("SOLR URL: %s", options.getSolrServerURL());
-    }
+	}
 
-    private static Options defineOptions() {
+	private static void dumpOptions(IndexerOptions options) {
+		log("Local doc cache path: %s", options.getDocCachePath());
+		log("Indexer threads: %d", options.getIndexerThreadCount());
+		log("Retrieve threads: %d", options.getRetrieveThreadCount());
+		log("SOLR URL: %s", options.getSolrServerURL());
+	}
 
-        Options options = new Options();
+	private static Options defineOptions() {
 
-        options.addOption("doccache", true, "The path to the root of the local document cache (Common)");
+		Options options = new Options();
 
-        for (CommandLineCommand cmd : _commandMap.values()) {
-            cmd.defineOptions(options);
-        }
+		options.addOption("doccache", true, "The path to the root of the local document cache (Common)");
 
-        return options;
-    }
+		for (CommandLineCommand cmd : _commandMap.values()) {
+			cmd.defineOptions(options);
+		}
 
-    private static void usage(Options options) {
-        HelpFormatter f = new HelpFormatter();
-        f.setWidth(200);
-        f.printHelp(String.format("java au.org.ala.bhl.BHLIndexer %s <options>", StringUtils.join(_commandMap.keySet(), "|")), options);
-    }
+		return options;
+	}
 
-    private static void log(String format, Object... args) {
-        LogService.log(BHLIndexer.class, format, args);
-    }
+	private static void usage(Options options) {
+		HelpFormatter f = new HelpFormatter();
+		f.setWidth(200);
+		f.printHelp(String.format("java au.org.ala.bhl.BHLIndexer %s <options>", StringUtils.join(_commandMap.keySet(), "|")), options);
+	}
+
+	private static void log(String format, Object... args) {
+		LogService.log(BHLIndexer.class, format, args);
+	}
 
 }

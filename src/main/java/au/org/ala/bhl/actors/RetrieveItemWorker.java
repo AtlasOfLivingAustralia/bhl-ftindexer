@@ -10,6 +10,8 @@ import org.codehaus.jackson.JsonNode;
 
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
+import au.org.ala.bhl.messages.RetrieveAndIndexItemText;
+import au.org.ala.bhl.messages.RetrieveItemText;
 import au.org.ala.bhl.service.DocumentCacheService;
 
 public class RetrieveItemWorker extends AbstractBHLActor {

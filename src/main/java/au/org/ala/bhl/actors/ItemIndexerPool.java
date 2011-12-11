@@ -1,11 +1,11 @@
 package au.org.ala.bhl.actors;
 
 
-public class ItemIndexer extends WorkerPool<IndexerWorker>  {
+public class ItemIndexerPool extends WorkerPool<IndexerWorker>  {
     
     private String _serverUrl;
     
-    public ItemIndexer(int workerCount, String serverUrl) {
+    public ItemIndexerPool(int workerCount, String serverUrl) {
         super(workerCount);
         _serverUrl = serverUrl;
     }

@@ -11,12 +11,12 @@ import au.org.ala.bhl.Command;
 import au.org.ala.bhl.DocumentPaginator;
 import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.PageHandler;
-import au.org.ala.bhl.service.ItemSourceService;
+import au.org.ala.bhl.service.ItemsService;
 
 @Command(name = "paginate")
 public class PaginateDocCacheCommand extends AbstractCommand {
 
-	public void execute(ItemSourceService service, final IndexerOptions options) throws Exception {
+	public void execute(ItemsService service, final IndexerOptions options) throws Exception {
 
 		File dir = new File(options.getDocCachePath());
 

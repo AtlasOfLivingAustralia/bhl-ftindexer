@@ -10,13 +10,13 @@ import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
-import au.org.ala.bhl.service.ItemSourceService;
+import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
 @Command(name = "maintain-cache")
 public class MaintainCacheCommand extends AbstractCommand {
 
-    public void execute(final ItemSourceService service, final IndexerOptions options) throws Exception {
+    public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
         
         final DocumentCacheService docCache = new DocumentCacheService(options.getDocCachePath());
 

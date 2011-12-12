@@ -1,7 +1,5 @@
 package au.org.ala.bhl;
 
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,7 @@ import java.util.List;
  * 
  */
 public class Timer {
-	
+
 	private static String EOL = System.getProperty("line.separator");
 
 	/** description */
@@ -25,7 +23,17 @@ public class Timer {
 
 	private long _frequency;
 
-	private Writer _writer = null;
+	private TimerOutputWriter _output;
+
+	public Timer(String description) {
+		this(description, new TimerOutputWriter() {
+
+			public void write(String message) {
+				System.out.println(message);
+				System.out.flush();
+			}
+		});
+	}
 
 	/**
 	 * ctor Starts the timer
@@ -33,12 +41,12 @@ public class Timer {
 	 * @param description
 	 *            a description of this timer
 	 */
-	public Timer(String description) {
+	public Timer(String description, TimerOutputWriter output) {
 		_description = description;
 		_times = new ArrayList<Long>();
 		_startCounter = System.nanoTime();
 		_frequency = 1000000000;
-		_writer = new OutputStreamWriter(System.out);
+		_output = output;
 	}
 
 	/** start/restart the timer */
@@ -68,7 +76,7 @@ public class Timer {
 	public void stop(boolean printelapsed) {
 		stop(printelapsed, false, null);
 	}
-	
+
 	/**
 	 * @param printelapsed
 	 * @param asdouble
@@ -91,7 +99,7 @@ public class Timer {
 			} else {
 				msg = String.format("%s took %d milliseconds. %s", _description, getElapsedMillis(), (auxmsg == null ? "" : " (" + auxmsg + ")"));
 			}
-			if (msg != null && _writer != null) {
+			if (msg != null) {
 				writeln(msg);
 			}
 		}
@@ -123,18 +131,14 @@ public class Timer {
 	public long getAverage() {
 		return getAverage(false);
 	}
-	
+
 	private void writeln(String msg) {
 		try {
-			_writer.write(msg + EOL);		
+			if (_output != null) {
+				_output.write(msg + EOL);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		} finally {
-			try {
-			_writer.flush();
-			} catch (Exception ex2) {
-				// ignore
-			}
 		}
 	}
 
@@ -149,7 +153,7 @@ public class Timer {
 			total += l;
 		}
 		long avg = (_times.size() == 0 ? 0 : total / _times.size());
-		if (dump && _writer != null) {
+		if (dump) {
 			writeln("Average : " + avg);
 		}
 		return avg;
@@ -160,6 +164,10 @@ public class Timer {
 	 */
 	public List<Long> getElapsedTimes() {
 		return _times;
+	}
+
+	public interface TimerOutputWriter {
+		void write(String message);
 	}
 
 }

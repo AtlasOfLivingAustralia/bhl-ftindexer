@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 
-import org.apache.commons.lang.StringUtils;
-
 public abstract class H2Service {
 
 	private String _path;
@@ -18,11 +16,8 @@ public abstract class H2Service {
 
 	protected H2Service(String path) {
 		_path = path;
-		log("Creating database connection");
 		_connection = createConnection();
-		log("Initializing service...");
 		init();
-		log("Initialization complete.");
 	}
 
 	protected void log(String format, Object... args) {
@@ -93,7 +88,7 @@ public abstract class H2Service {
 	}
 
 	protected void statement(String sql, StatementHandler handler, Object... params) {
-		log("Preparing Statement: %s (%s)", sql, StringUtils.join(params, ", "));
+		// log("Preparing Statement: %s (%s)", sql, StringUtils.join(params, ", "));
 		Connection con = getConnection();
 		PreparedStatement stmt = null;
 		try {

@@ -38,7 +38,7 @@ public class IndexingController {
         _utilityPool = Actors.actorOf(new UntypedActorFactory() {
 			
 			public Actor create() {
-				return new UtilityActorPool(options.getIndexerThreadCount());
+				return new UtilityActorPool(options);
 			}
 		});
                 

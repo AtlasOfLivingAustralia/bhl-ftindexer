@@ -50,11 +50,17 @@ public class BHLIndexer {
 			throw new RuntimeException("Failed to register command class (No annotation!): " + clazz.getName());
 		}
 	}
-
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				log("Shutting down.");
+			}
+		});
 
 		CommandLineParser parser = new GnuParser();
 
@@ -74,11 +80,14 @@ public class BHLIndexer {
 				ItemsService service = new ItemsService();
 				IndexerOptions indexerOptions = new IndexerOptions(line);
 				dumpOptions(indexerOptions);
+				Timer t = new Timer(cmdStr);				
 				_commandMap.get(cmdStr).execute(service, indexerOptions);
+				t.stop(false);
+				log("Command complete: %s (%d ms)", cmdStr, t.getElapsedMillis());
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
-			log("Command complete: %s", cmdStr);
+			
 		} else {
 			System.out.println(String.format("Unrecognized command: %s", cmdStr));
 			usage(options);

@@ -5,6 +5,7 @@ import java.util.Date;
 public class CacheControlBlock {
 	
 	public String ItemID;	
+	public String InternetArchiveID;
 	public String Language;
 	public String ItemURL;	
 	public Date TimeComplete;

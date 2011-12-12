@@ -3,13 +3,14 @@ package au.org.ala.bhl.service;
 import java.io.File;
 import java.io.FileFilter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.NullNode;
 
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.Timer;
@@ -19,9 +20,11 @@ public class DocumentCacheService {
 
 	private String _cacheDir;
 	public static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
+	private ObjectMapper _objectMapper;
 
 	public DocumentCacheService(String cacheDir) {
 		_cacheDir = cacheDir;
+		_objectMapper = new ObjectMapper();
 	}
 
 	public boolean isItemInCache(ItemTO item) {
@@ -82,19 +85,57 @@ public class DocumentCacheService {
 
 			String completeFilePath = String.format("%s\\.complete", itemPath);
 			File completeFile = new File(completeFilePath);
-			
+			String ccbpath = String.format("%s\\.cachecontrol", itemPath);
+			File ccbfile = new File(ccbpath);
+
 			CacheControlBlock ccb = new CacheControlBlock();
+			ccb.ItemID = item.getItemId();
+			ccb.InternetArchiveID = item.getInternetArchiveId();
+			
 			if (completeFile.exists()) {
 				String date = FileUtils.readFileToString(completeFile).trim();
-				if (!StringUtils.isEmpty(date)) {				
-					SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd hh:mm:ss zz YYYY");				
+				if (!StringUtils.isEmpty(date)) {
+					SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd hh:mm:ss zz YYYY");
 					ccb.TimeComplete = sdf.parse(date.trim());
 				}
 			}
 			
-			JsonNode node = WebServiceHelper.getJSON(item.getItemMetaDataURL());
-			
-			
+			boolean force = false;
+
+			if (!ccbfile.exists() || force) {
+				
+				if (ccbfile.exists()) {
+					ccb = _objectMapper.readValue(ccbfile, CacheControlBlock.class);
+				}
+				
+				JsonNode node = WebServiceHelper.getJSON(item.getItemMetaDataURL());
+				boolean ok = false;
+				if (node != null) {
+					JsonNode result = node.get("Result");
+					if (result != null && !(result instanceof NullNode)) {
+						ccb.Language = result.get("Language").getTextValue();
+						ccb.ItemURL = result.get("ItemUrl").getTextValue();
+						log("Writing cache control for item %s (%s)", item.getItemId(), item.getInternetArchiveId());
+						_objectMapper.writeValue(ccbfile, ccb);
+						_objectMapper.writeValue(new File(String.format("%s\\.metadata", itemPath)), result);
+						ok = true;
+					}
+				}
+				
+				if (!ok) {
+					// skip?
+					log("Meta data for item %s (%s) could not be retrieved. Writing dummy cache control to prevent retries.", item.getItemId(), item.getInternetArchiveId());
+					ccb.ItemURL = "";
+					ccb.Language = "";					
+					_objectMapper.writeValue(ccbfile, ccb);					
+				} else {
+					if (completeFile.exists()) {
+						log("Deleting obselete .complete file for item %s (%s).", item.getItemId(), item.getInternetArchiveId());
+						completeFile.delete();
+					}
+				}
+			}
+
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}

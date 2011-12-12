@@ -1,14 +1,19 @@
 package au.org.ala.bhl.actors;
 
-public class UtilityActorPool extends WorkerPool<UtilityWorker> {
+import au.org.ala.bhl.IndexerOptions;
 
-	public UtilityActorPool(int workerCount) {
-		super(workerCount);
+public class UtilityActorPool extends WorkerPool<UtilityWorker> {
+	
+	private IndexerOptions _options;
+
+	public UtilityActorPool(IndexerOptions options) {
+		super(options.getUtilityThreadCount());
+		_options = options;
 	}
 
 	@Override
 	protected UtilityWorker createWorker() {
-		return new UtilityWorker();
+		return new UtilityWorker(_options);
 	}
 
 }

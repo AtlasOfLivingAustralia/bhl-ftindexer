@@ -13,6 +13,7 @@ public class IndexerOptions {
     
     private int _retrieveThreads;
     private int _indexingThreads;
+    private int _utilityThreads;
     
     public IndexerOptions(CommandLine line) {
         
@@ -24,6 +25,7 @@ public class IndexerOptions {
         _solrServerUrl = line.getOptionValue("solrserver", "http://localhost:8983/solr");
         _retrieveThreads = Integer.parseInt(line.getOptionValue("retrievethreads", "20"));
         _indexingThreads = Integer.parseInt(line.getOptionValue("indexingthreads", "1"));
+        _utilityThreads = Integer.parseInt(line.getOptionValue("utilitythreads", "2"));
         
         _outputFile = line.getOptionValue("o", "out.txt");
     }
@@ -71,6 +73,10 @@ public class IndexerOptions {
     
     public int getIndexerThreadCount() {
         return _indexingThreads;
+    }
+    
+    public int getUtilityThreadCount() {
+    	return _utilityThreads;
     }
     
     public void setIndexerThreadCount(int count) {

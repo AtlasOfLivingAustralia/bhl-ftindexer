@@ -45,6 +45,7 @@ public class IndexItemsCommand extends AbstractCommand {
                 }
             }
         });
+        _indexer.queueStopMessages();
         log("Jobs queued, Waiting...");
     }
 

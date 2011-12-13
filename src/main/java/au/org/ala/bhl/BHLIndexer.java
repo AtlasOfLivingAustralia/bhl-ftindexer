@@ -10,6 +10,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 
+import au.org.ala.bhl.command.CacheStatsCommand;
 import au.org.ala.bhl.command.CommandLineCommand;
 import au.org.ala.bhl.command.ExtractNamesCommand;
 import au.org.ala.bhl.command.ImportItemsCommand;
@@ -35,6 +36,7 @@ public class BHLIndexer {
 		registerCommand(RetrieveItemsCommand.class);
 		registerCommand(ExtractNamesCommand.class);
 		registerCommand(UpdateCacheControlCommand.class);
+		registerCommand(CacheStatsCommand.class);
 	}
 
 	private static void registerCommand(Class<? extends CommandLineCommand> clazz) {

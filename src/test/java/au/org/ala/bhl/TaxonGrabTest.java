@@ -11,7 +11,7 @@ public class TaxonGrabTest {
     @Test
     public void test1() {
         TaxonGrab tg = new TaxonGrab();
-        tg.findNames("bcd asdhj jHAS Kjash");
+        tg.findNames("bcd asdhj jHAS Kjash", "english");
     }
     
     @Test
@@ -29,7 +29,7 @@ public class TaxonGrabTest {
         String data = IOUtils.toString(is);
         
         TaxonGrab tg = new TaxonGrab();
-        List<String> names = tg.findNames(data);
+        List<String> names = tg.findNames(data, "english");
         
         for (String name : names) {
             System.err.println(name);

@@ -43,10 +43,17 @@ public class TaxonGrab {
     private Set<String> _lexicon;
     
     public TaxonGrab() {
-    	_lexicon = loadLexicon();    	
+    	WordLists.loadWordLists();    	
     }
 
-    public List<String> findNames(String text) {
+    public List<String> findNames(String text, String language) {
+    	
+    	_lexicon = WordLists.getWordList(language);
+    	
+    	if (_lexicon == null) {
+    		System.err.println("Warning! No words found for language: " + language);
+    		_lexicon = new HashSet<String>();
+    	}
         
         String[] tokens = normalizeText(text, SYMBOLS).split(" ");
 
@@ -80,6 +87,8 @@ public class TaxonGrab {
             }
 
             // if the word is contained in the lexicon it is discarded
+	            
+            
             if (!lexicon.contains(normalizeText(wordKey, ACCENTS))) {
                 
                 if (pat_fam.matcher(word).find() && !pat_vs.matcher(word).find()) {
@@ -132,7 +141,7 @@ public class TaxonGrab {
 
     private Set<String> loadLexicon() {
         HashSet<String> set = new HashSet<String>();
-        String path = "/au/org/ala/bhl/wordlist.txt";
+        String path = "/au/org/ala/bhl/english.txt";
         InputStream is = TaxonGrab.class.getResourceAsStream(path);
         try {
             @SuppressWarnings("unchecked")

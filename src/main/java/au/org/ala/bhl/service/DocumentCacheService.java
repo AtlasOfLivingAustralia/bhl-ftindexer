@@ -91,7 +91,7 @@ public class DocumentCacheService {
 			CacheControlBlock ccb = new CacheControlBlock();
 			ccb.ItemID = item.getItemId();
 			ccb.InternetArchiveID = item.getInternetArchiveId();
-			
+
 			if (completeFile.exists()) {
 				String date = FileUtils.readFileToString(completeFile).trim();
 				if (!StringUtils.isEmpty(date)) {
@@ -99,15 +99,15 @@ public class DocumentCacheService {
 					ccb.TimeComplete = sdf.parse(date.trim());
 				}
 			}
-			
+
 			boolean force = false;
 
 			if (!ccbfile.exists() || force) {
-				
+
 				if (ccbfile.exists()) {
 					ccb = _objectMapper.readValue(ccbfile, CacheControlBlock.class);
 				}
-				
+
 				JsonNode node = WebServiceHelper.getJSON(item.getItemMetaDataURL());
 				boolean ok = false;
 				if (node != null) {
@@ -121,13 +121,13 @@ public class DocumentCacheService {
 						ok = true;
 					}
 				}
-				
+
 				if (!ok) {
 					// skip?
 					log("Meta data for item %s (%s) could not be retrieved. Writing dummy cache control to prevent retries.", item.getItemId(), item.getInternetArchiveId());
 					ccb.ItemURL = "";
-					ccb.Language = "";					
-					_objectMapper.writeValue(ccbfile, ccb);					
+					ccb.Language = "";
+					_objectMapper.writeValue(ccbfile, ccb);
 				} else {
 					if (completeFile.exists()) {
 						log("Deleting obselete .complete file for item %s (%s).", item.getItemId(), item.getInternetArchiveId());
@@ -154,10 +154,11 @@ public class DocumentCacheService {
 		public void onItem(File itemDir) {
 			File[] candidates = itemDir.listFiles();
 			int pageCount = 0;
+			String itemId = itemDir.getName();
+			_handler.startItem(itemId);
 			for (File candidate : candidates) {
 				Matcher m = PAGE_FILE_REGEX.matcher(candidate.getName());
 				if (m.matches()) {
-					String itemId = itemDir.getName();
 					String pageId = m.group(2);
 					pageCount++;
 					if (_handler != null) {
@@ -165,6 +166,7 @@ public class DocumentCacheService {
 					}
 				}
 			}
+			_handler.endItem(itemId);
 			log("%d pages processed for item %s", pageCount, itemDir.getName());
 			_pageCountTotal += pageCount;
 		}
@@ -198,7 +200,7 @@ public class DocumentCacheService {
 			_count++;
 			if (_handler != null) {
 				_handler.onItem(dir);
-				int percent = Math.round(((float) _count / (float) _total) / (float) 100.0);
+				int percent = Math.round(((float) _count / (float) _total) * (float) 100.0);
 				if (percent != _lastPercent) {
 					_lastPercent = percent;
 					if (_handler != null) {
@@ -210,6 +212,20 @@ public class DocumentCacheService {
 
 			return false;
 		}
+	}
+
+	public CacheControlBlock getCacheControl(String itemId) {
+		String ccbpath = String.format("%s\\%s\\.cachecontrol", _cacheDir, itemId);
+		File ccbfile = new File(ccbpath);
+		if (ccbfile.exists()) {
+			try {
+				return (CacheControlBlock) _objectMapper.readValue(ccbfile, CacheControlBlock.class);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		return null;
 	}
 
 }

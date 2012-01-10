@@ -39,11 +39,13 @@ public class DocumentCacheService {
 	}
 
 	public String getItemDirectoryPath(String iaId) {
-		return String.format("%s%s%s", _cacheDir, SEPARATOR, iaId);
+		String subdir = iaId.substring(0,0).toLowerCase();
+		return String.format("%s%s%s%s%s", _cacheDir, SEPARATOR, subdir, SEPARATOR, iaId);
 	}
 
 	public String getItemDirectoryPath(ItemTO item) {
-		return String.format("%s%s%s", _cacheDir, SEPARATOR, item.getInternetArchiveId());
+		String subdir = item.getInternetArchiveId().substring(0,0).toLowerCase();
+		return String.format("%s%s%s%s%s", _cacheDir, SEPARATOR, subdir, SEPARATOR, item.getInternetArchiveId());
 	}
 
 	protected void log(String format, Object... args) {

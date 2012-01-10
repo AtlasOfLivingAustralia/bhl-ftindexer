@@ -1,7 +1,5 @@
 package au.org.ala.bhl.actors;
 
-import java.io.File;
-
 import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.messages.UpdateCacheControl;

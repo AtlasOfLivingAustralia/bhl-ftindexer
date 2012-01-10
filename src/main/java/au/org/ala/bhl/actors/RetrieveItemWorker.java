@@ -15,6 +15,8 @@ import au.org.ala.bhl.messages.RetrieveItemText;
 import au.org.ala.bhl.service.DocumentCacheService;
 
 public class RetrieveItemWorker extends AbstractBHLActor {
+	
+	private static String SEPARATOR = System.getProperty("file.separator");
 
     private final DocumentCacheService _docCache;
 
@@ -30,7 +32,7 @@ public class RetrieveItemWorker extends AbstractBHLActor {
             ItemDescriptor item = indexMessage.getItem();
             final String iaId = item.getInternetArchiveId();
             String itemDir = _docCache.getItemDirectoryPath(iaId);
-            String completeFilePath = String.format("%s\\.complete", itemDir);
+            String completeFilePath = String.format("%s%s.complete", itemDir, SEPARATOR);
             File completeFile = new File(completeFilePath);
             File f = new File(itemDir);
             if (f.exists() && completeFile.exists()) {
@@ -85,7 +87,7 @@ public class RetrieveItemWorker extends AbstractBHLActor {
             for (int i = 0; i < pagesNode.size(); ++i) {
                 JsonNode node = pagesNode.get(i);
                 int pageId = node.get("PageID").getIntValue();
-                String pagePath = String.format("%s\\%05d_%d.txt", _docCache.getItemDirectoryPath(item.getInternetArchiveId()), i, pageId);
+                String pagePath = String.format("%s%s%05d_%d.txt", _docCache.getItemDirectoryPath(item.getInternetArchiveId()), SEPARATOR, i, pageId);
                 File pageFile = new File(pagePath);
                 if (!pageFile.exists()) {
                     String ocrURL = node.get("OcrUrl").getTextValue();

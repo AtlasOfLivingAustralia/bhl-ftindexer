@@ -14,7 +14,7 @@ import au.org.ala.bhl.to.ItemTO;
 public class ItemsService extends H2Service {
 
     public ItemsService() {
-        super("/data/bhl-ftindex/itemsource");
+        super("itemsource");
     }
 
     public void addItem(ItemDescriptor item) {

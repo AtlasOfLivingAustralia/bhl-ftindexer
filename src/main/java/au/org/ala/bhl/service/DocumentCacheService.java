@@ -21,6 +21,7 @@ public class DocumentCacheService {
 	private String _cacheDir;
 	public static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
 	private ObjectMapper _objectMapper;
+	private static String SEPARATOR = System.getProperty("file.separator");
 
 	public DocumentCacheService(String cacheDir) {
 		_cacheDir = cacheDir;
@@ -38,11 +39,11 @@ public class DocumentCacheService {
 	}
 
 	public String getItemDirectoryPath(String iaId) {
-		return String.format("%s\\%s", _cacheDir, iaId);
+		return String.format("%s%s%s", _cacheDir, SEPARATOR, iaId);
 	}
 
 	public String getItemDirectoryPath(ItemTO item) {
-		return String.format("%s\\%s", _cacheDir, item.getInternetArchiveId());
+		return String.format("%s%s%s", _cacheDir, SEPARATOR, item.getInternetArchiveId());
 	}
 
 	protected void log(String format, Object... args) {
@@ -83,9 +84,9 @@ public class DocumentCacheService {
 		try {
 			String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
 
-			String completeFilePath = String.format("%s\\.complete", itemPath);
+			String completeFilePath = String.format("%s%s.complete", itemPath, SEPARATOR);
 			File completeFile = new File(completeFilePath);
-			String ccbpath = String.format("%s\\.cachecontrol", itemPath);
+			String ccbpath = String.format("%s%s.cachecontrol", itemPath, SEPARATOR);
 			File ccbfile = new File(ccbpath);
 
 			CacheControlBlock ccb = new CacheControlBlock();
@@ -117,7 +118,7 @@ public class DocumentCacheService {
 						ccb.ItemURL = result.get("ItemUrl").getTextValue();
 						log("Writing cache control for item %s (%s)", item.getItemId(), item.getInternetArchiveId());
 						_objectMapper.writeValue(ccbfile, ccb);
-						_objectMapper.writeValue(new File(String.format("%s\\.metadata", itemPath)), result);
+						_objectMapper.writeValue(new File(String.format("%s%s.metadata", itemPath, SEPARATOR)), result);
 						ok = true;
 					}
 				}
@@ -215,7 +216,7 @@ public class DocumentCacheService {
 	}
 
 	public CacheControlBlock getCacheControl(String itemId) {
-		String ccbpath = String.format("%s\\%s\\.cachecontrol", _cacheDir, itemId);
+		String ccbpath = String.format("%s%s%s%s.cachecontrol", _cacheDir, SEPARATOR, itemId, SEPARATOR);
 		File ccbfile = new File(ccbpath);
 		if (ccbfile.exists()) {
 			try {

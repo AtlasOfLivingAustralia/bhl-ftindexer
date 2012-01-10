@@ -19,9 +19,9 @@ public class IndexerOptions {
         
         _indexDocCacheOnly = Boolean.parseBoolean(line.getOptionValue("indexlocalonly", "false"));
         
-        _sourceFilename = line.getOptionValue("sourcefile", "c:\\zz\\BHLExtract.csv");
+        _sourceFilename = line.getOptionValue("sourcefile", "BHLExtract.csv");
         
-        _docCachePath = line.getOptionValue("doccache", "J:\\data\\DocCache");
+        _docCachePath = line.getOptionValue("doccache", "/data/bhl-ftindex/doccache");
         _solrServerUrl = line.getOptionValue("solrserver", "http://localhost:8983/solr");
         _retrieveThreads = Integer.parseInt(line.getOptionValue("retrievethreads", "20"));
         _indexingThreads = Integer.parseInt(line.getOptionValue("indexingthreads", "1"));

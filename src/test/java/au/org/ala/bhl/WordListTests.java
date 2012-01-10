@@ -59,7 +59,7 @@ public class WordListTests extends TestCase {
     
     @Test
     public void testDetectLanguage4() throws Exception {
-    	String path = "J:\\data\\DocCache\\21753000002021\\00111_6026853.txt";
+    	String path = "/data/doccache/21753000002021/00111_6026853.txt";
     	String text = FileUtils.readFileToString(new File(path), "utf-8");
     	LanguageScore lang = WordLists.detectLanguage(text, "english");
     	System.out.println(lang);

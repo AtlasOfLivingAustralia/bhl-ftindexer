@@ -24,7 +24,7 @@ public class MaintainCacheCommand extends AbstractCommand {
 
             public void onItem(ItemTO item) {                
                 File f = new File(docCache.getItemDirectoryPath(item));
-                log("Updating local file path for item %s", item.getInternetArchiveId());
+                log("Updating local file path for item %s (%s)", item.getInternetArchiveId(), f.getAbsolutePath());
                 if (f.exists()) {
                     service.updateCachedFileInfo(item.getItemId(), f);
                     if (StringUtils.isNotEmpty(item.getStatus()) && !item.getStatus().equals(ItemStatus.INDEXED)) {

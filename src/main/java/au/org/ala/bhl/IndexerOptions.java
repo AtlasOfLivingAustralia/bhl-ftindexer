@@ -15,6 +15,8 @@ public class IndexerOptions {
     private int _indexingThreads;
     private int _utilityThreads;
     
+    private String _itemFilter;
+    
     public IndexerOptions(CommandLine line) {
         
         _indexDocCacheOnly = Boolean.parseBoolean(line.getOptionValue("indexlocalonly", "false"));
@@ -28,6 +30,8 @@ public class IndexerOptions {
         _utilityThreads = Integer.parseInt(line.getOptionValue("utilitythreads", "2"));
         
         _outputFile = line.getOptionValue("o", "out.txt");
+        
+        _itemFilter = line.getOptionValue("filter", "");
     }
     
     
@@ -89,6 +93,14 @@ public class IndexerOptions {
     
     public void setOutputFile(String outputFile) {
     	_outputFile = outputFile;    			
+    }
+    
+    public String getItemFilter() {
+    	return _itemFilter;
+    }
+    
+    public void setItemFilter(String regex) {
+    	_itemFilter = regex;
     }
 
 }

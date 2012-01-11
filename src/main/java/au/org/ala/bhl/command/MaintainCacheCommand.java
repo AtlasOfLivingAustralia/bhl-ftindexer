@@ -35,7 +35,7 @@ public class MaintainCacheCommand extends AbstractCommand {
                     service.setItemStatus(item.getItemId(), null, 0);
                 }
             }
-        });
+        }, createItemFilter(options));
     }
 
     public void defineOptions(Options options) {

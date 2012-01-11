@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import au.org.ala.bhl.ItemDescriptor;
+import au.org.ala.bhl.ItemFilter;
 import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.ReflectiveMapper;
@@ -31,7 +32,7 @@ public class ItemsService extends H2Service {
         nonQuery("DELETE FROM Items");
     }
     
-    public void forAllItems(final ItemTOHandler handler) {
+    public void forAllItems(final ItemTOHandler handler, final ItemFilter filter) {
         
         final ReflectiveMapper<ItemTO> mapper = new ReflectiveMapper<ItemTO>();
         
@@ -39,8 +40,10 @@ public class ItemsService extends H2Service {
             public void onRow(ResultSet rs) throws SQLException {                
                 ItemTO item = new ItemTO();                
                 mapper.map(rs, item);                
-                if (handler != null) {
-                    handler.onItem(item);
+                if (filter == null || filter.accept(item)) {
+	                if (handler != null) {
+	                    handler.onItem(item);
+	                }
                 }
             }
         });        

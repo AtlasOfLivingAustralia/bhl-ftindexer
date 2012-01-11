@@ -42,14 +42,14 @@ public class ExtractNamesCommand extends AbstractCommand {
 			private String _language = "";
 			
 			
-			public void onPage(String itemId, String pageId, File pageFile) {
+			public void onPage(String internetArchiveId, String pageId, File pageFile) {
 
 				try {
 					String text = FileUtils.readFileToString(pageFile);
 					LanguageScore score = WordLists.detectLanguage(text, _language);
 					String lang = _language;					
 					if (score != null &&  ! StringUtils.equalsIgnoreCase(score.getName(), _language) && score.getScore() > .75) {
-						log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s", itemId, pageId, score.getName(), score.getScore(), _language);
+						log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s", internetArchiveId, pageId, score.getName(), score.getScore(), _language);
 						lang = score.getName();
 						if (score.getScore() == 1.0) {
 							System.err.println("Here");
@@ -58,7 +58,7 @@ public class ExtractNamesCommand extends AbstractCommand {
 					
 					List<String> names = nameGrabber.findNames(text, lang);
 					for (String name : names) {
-						String line = String.format("%s,%s,\"%s\",\"%s\"\n", itemId, pageId, name, pageFile.getName());
+						String line = String.format("%s,%s,\"%s\",\"%s\"\n", internetArchiveId, pageId, name, pageFile.getName());
 						writer.write(line);
 					}
 				} catch (IOException ioex) {
@@ -67,12 +67,12 @@ public class ExtractNamesCommand extends AbstractCommand {
 
 			}
 
-			public void startItem(String itemId) {
-				CacheControlBlock ccb = cache.getCacheControl(itemId);
+			public void startItem(String internetArchiveId) {
+				CacheControlBlock ccb = cache.getCacheControl(internetArchiveId);
 				if (ccb != null) {
 					_language = ccb.Language;
 				}
-				log("Starting item %s (%s)", itemId, _language);
+				log("Starting item %s (%s)", internetArchiveId, _language);
 			}
 
 			public void endItem(String itemId) {

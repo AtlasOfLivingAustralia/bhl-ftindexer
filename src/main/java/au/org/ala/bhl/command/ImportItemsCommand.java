@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
@@ -12,9 +14,11 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.org.ala.bhl.Command;
 import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.ItemDescriptor;
+import au.org.ala.bhl.ItemDescriptorFilter;
 import au.org.ala.bhl.ItemsFileHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
+import au.org.ala.bhl.service.LogService;
 
 @Command(name = "import-items")
 public class ImportItemsCommand extends AbstractCommand {
@@ -29,11 +33,19 @@ public class ImportItemsCommand extends AbstractCommand {
         final DocumentCacheService docCache = new DocumentCacheService(options.getDocCachePath());
         
         ItemImporter importer = new ItemImporter(service, docCache);
-        processItemsFile(options, importer);        
+        
+        processItemsFile(options, importer, createItemDescriptorFilter(options));        
         log("%d Items Imported.", importer.getItemCount());
     }
+    
+    private static ItemDescriptorFilter createItemDescriptorFilter(IndexerOptions options) {
+    	if (!StringUtils.isEmpty(options.getItemFilter())) {
+    		return new ItemDescriptorIAIdFilter(options.getItemFilter());
+    	}
+    	return null;
+    }
 
-    private static void processItemsFile(final IndexerOptions options, ItemsFileHandler handler) throws Exception {
+    private static void processItemsFile(final IndexerOptions options, ItemsFileHandler handler, ItemDescriptorFilter filter) throws Exception {
         String sourceFile = options.getSourceFilename();
         File f = new File(sourceFile);
         if (f.exists()) {
@@ -44,8 +56,11 @@ public class ImportItemsCommand extends AbstractCommand {
             try {
                 while ((nextLine = reader.readNext()) != null) {
                     ItemDescriptor item = new ItemDescriptor(nextLine[0], nextLine[1], nextLine[2], nextLine[3], nextLine[4]);
-                    if (handler != null) {
-                        handler.onItem(item);
+                    if (filter == null || filter.accept(item)) {
+                    	LogService.log(ImportItemsCommand.class, "Including item %s", item.getInternetArchiveId());
+	                    if (handler != null) {
+	                        handler.onItem(item);
+	                    }
                     }
                 }
             } finally {
@@ -62,6 +77,7 @@ public class ImportItemsCommand extends AbstractCommand {
 
     public void defineOptions(Options options) {
         options.addOption("sourcefile", true, "Input file for seeding items store (import-items)");
+        options.addOption("filter", true, "regex for filtering Internet Archive Ids");
     }
     
     class ItemImporter implements ItemsFileHandler {
@@ -93,6 +109,21 @@ public class ImportItemsCommand extends AbstractCommand {
             return _itemCount;
         }
         
+    }
+    
+    static class ItemDescriptorIAIdFilter implements ItemDescriptorFilter {
+    	
+    	private Pattern _regex;
+
+    	public ItemDescriptorIAIdFilter(String filter) {
+    		_regex = Pattern.compile("^" + filter + "$");
+    	}
+    	
+		public boolean accept(ItemDescriptor item) {			
+			Matcher m = _regex.matcher(item.getInternetArchiveId());
+			return m.find();
+		}
+    	
     }
 
 }

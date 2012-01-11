@@ -19,7 +19,7 @@ public class StatisticsCommand extends AbstractCommand {
 
     public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
         StatsCounter counter = new StatsCounter(options);
-        service.forAllItems(counter);
+        service.forAllItems(counter, createItemFilter(options));
         counter.dump();
     }
 

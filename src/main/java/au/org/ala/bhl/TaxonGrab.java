@@ -2,7 +2,10 @@ package au.org.ala.bhl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +15,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonNode;
+
+import au.org.ala.bhl.service.WebServiceHelper;
 
 public class TaxonGrab {
 
@@ -69,7 +75,26 @@ public class TaxonGrab {
             analyse(word, _lexicon, state);
         }
 
-        return new ArrayList<String>(state.Taxa);
+        return removeUnverifiedNames(state.Taxa);
+    }
+    
+    private List<String> removeUnverifiedNames(Collection<String> names) {
+    	List<String> verified = new ArrayList<String>();
+    	
+    	for (String name : names) {
+    		try {
+				JsonNode root = WebServiceHelper.getJSON(String.format("http://bie.ala.org.au/ws/guid/%s", URLEncoder.encode(name, "utf-8")));
+				if (root.isArray() && root.size() > 0) {
+					verified.add(name);
+				}
+								
+			} catch (Exception e) {
+				e.printStackTrace();
+			}  		
+    	}
+    	
+    	return verified;
+    	
     }
     
     private void analyse(String word, Set<String> lexicon, SearchState state) {

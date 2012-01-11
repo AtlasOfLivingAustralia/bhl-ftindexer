@@ -101,8 +101,10 @@ public class BHLIndexer {
 	private static void dumpOptions(IndexerOptions options) {
 		log("Local doc cache path: %s", options.getDocCachePath());
 		log("Indexer threads: %d", options.getIndexerThreadCount());
+		log("Utility threads: %s", options.getUtilityThreadCount());
 		log("Retrieve threads: %d", options.getRetrieveThreadCount());
 		log("SOLR URL: %s", options.getSolrServerURL());
+		log("Filter: %s", options.getItemFilter());
 	}
 
 	private static Options defineOptions() {

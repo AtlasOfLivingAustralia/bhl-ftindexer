@@ -6,7 +6,7 @@ public interface CachedItemPageHandler {
 	
 	void startItem(String itemId);
 	
-	void onPage(String itemId, String pageId, File pageFile);
+	void onPage(String iaId, String pageId, File pageFile);
 	
 	void endItem(String itemId);
 

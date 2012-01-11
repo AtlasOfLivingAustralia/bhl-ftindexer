@@ -28,7 +28,7 @@ public class RetrieveItemsCommand extends AbstractCommand {
                     _indexer.retrieveItem(createItemDescriptor(item));
                 }
             }
-        });
+        }, createItemFilter(indexerOptions));
         _indexer.queueStopMessages();
         log("Jobs queued, Waiting...");
     }

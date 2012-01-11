@@ -31,7 +31,7 @@ public class IndexingController {
         
         _indexerPool = Actors.actorOf(new UntypedActorFactory() {
             public Actor create() {
-                return new ItemIndexerPool(options.getIndexerThreadCount(), _options.getSolrServerURL());
+                return new ItemIndexerPool(options.getIndexerThreadCount(), _options.getSolrServerURL(), _options.getDocCachePath());
             }
         });
         

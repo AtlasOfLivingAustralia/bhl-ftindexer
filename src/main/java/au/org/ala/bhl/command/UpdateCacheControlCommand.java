@@ -20,7 +20,7 @@ public class UpdateCacheControlCommand extends AbstractCommand {
 			public void onItem(ItemTO item) {
 				indexer.updateCacheControl(createItemDescriptor(item));
 			}
-		});
+		}, createItemFilter(options));
 		indexer.queueStopMessages();
 		log("Jobs queued, Waiting...");
 	}

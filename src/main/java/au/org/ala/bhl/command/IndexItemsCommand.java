@@ -8,6 +8,7 @@ import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.IndexingController;
 import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.ItemTOHandler;
+import au.org.ala.bhl.WordLists;
 import au.org.ala.bhl.policy.DefaultRetrievePolicy;
 import au.org.ala.bhl.policy.ItemRetrievePolicy;
 import au.org.ala.bhl.service.DocumentCacheService;
@@ -22,6 +23,8 @@ public class IndexItemsCommand extends AbstractCommand {
     private static ItemRetrievePolicy _retrievePolicy = new DefaultRetrievePolicy();
 
     public void execute(final ItemsService service, final IndexerOptions indexerOptions) throws Exception {
+    	
+    	WordLists.loadWordLists();
 
         final DocumentCacheService docCache = new DocumentCacheService(indexerOptions.getDocCachePath());
 
@@ -44,7 +47,7 @@ public class IndexItemsCommand extends AbstractCommand {
                     }
                 }
             }
-        });
+        }, createItemFilter(indexerOptions));
         _indexer.queueStopMessages();
         log("Jobs queued, Waiting...");
     }

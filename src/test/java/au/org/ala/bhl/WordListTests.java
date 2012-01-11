@@ -57,16 +57,14 @@ public class WordListTests extends TestCase {
     	System.out.println(lang);
     }
     
-    @Test
-    public void testDetectLanguage4() throws Exception {
-    	String path = "/data/doccache/21753000002021/00111_6026853.txt";
-    	String text = FileUtils.readFileToString(new File(path), "utf-8");
-    	LanguageScore lang = WordLists.detectLanguage(text, "english");
-    	System.out.println(lang);
-
-    }
-    
-
-
+//    @Test
+//    public void testDetectLanguage4() throws Exception {
+//    	String path = "/data/bhl-ftindex/doccache/2/21753000002021/00111_6026853.txt";
+//    	String text = FileUtils.readFileToString(new File(path), "utf-8");
+//    	LanguageScore lang = WordLists.detectLanguage(text, "english");
+//    	System.out.println(lang);
+//
+//    }
+//    
 
 }

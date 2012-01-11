@@ -98,7 +98,7 @@ public class DocumentCacheService {
 			if (completeFile.exists()) {
 				String date = FileUtils.readFileToString(completeFile).trim();
 				if (!StringUtils.isEmpty(date)) {
-					SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd hh:mm:ss zz YYYY");
+					SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd hh:mm:ss zz yyyy");
 					ccb.TimeComplete = sdf.parse(date.trim());
 				}
 			}
@@ -142,7 +142,22 @@ public class DocumentCacheService {
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
-
+		
+	}
+	
+	public JsonNode getItemMetaData(ItemDescriptor item) {
+		try {
+			String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
+			File f = new File(String.format("%s%s.metadata", itemPath, SEPARATOR));
+			if (f.exists()) {
+				String text = FileUtils.readFileToString(f);
+				JsonNode root = new ObjectMapper().readValue(text, JsonNode.class);				
+				return root;
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 
 	class ItemPageHandlerAdapter implements CachedItemHandler {
@@ -157,19 +172,19 @@ public class DocumentCacheService {
 		public void onItem(File itemDir) {
 			File[] candidates = itemDir.listFiles();
 			int pageCount = 0;
-			String itemId = itemDir.getName();
-			_handler.startItem(itemId);
+			String iaId = itemDir.getName();
+			_handler.startItem(iaId);
 			for (File candidate : candidates) {
 				Matcher m = PAGE_FILE_REGEX.matcher(candidate.getName());
 				if (m.matches()) {
 					String pageId = m.group(2);
 					pageCount++;
 					if (_handler != null) {
-						_handler.onPage(itemId, pageId, candidate);
+						_handler.onPage(iaId, pageId, candidate);
 					}
 				}
 			}
-			_handler.endItem(itemId);
+			_handler.endItem(iaId);
 			log("%d pages processed for item %s", pageCount, itemDir.getName());
 			_pageCountTotal += pageCount;
 		}
@@ -217,8 +232,8 @@ public class DocumentCacheService {
 		}
 	}
 
-	public CacheControlBlock getCacheControl(String itemId) {
-		String ccbpath = String.format("%s%s%s%s.cachecontrol", _cacheDir, SEPARATOR, itemId, SEPARATOR);
+	public CacheControlBlock getCacheControl(String internetArchiveId) {
+		String ccbpath = String.format("%s%s%s%s.cachecontrol", _cacheDir, SEPARATOR, internetArchiveId, SEPARATOR);
 		File ccbfile = new File(ccbpath);
 		if (ccbfile.exists()) {
 			try {

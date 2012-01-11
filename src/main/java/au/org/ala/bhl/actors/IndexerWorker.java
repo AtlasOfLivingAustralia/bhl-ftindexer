@@ -1,8 +1,11 @@
 package au.org.ala.bhl.actors;
 
 import java.io.File;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.plaf.ListUI;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -12,18 +15,27 @@ import org.apache.solr.common.SolrInputDocument;
 
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
+import au.org.ala.bhl.LanguageScore;
+import au.org.ala.bhl.TaxonGrab;
+import au.org.ala.bhl.WordLists;
 import au.org.ala.bhl.messages.IndexText;
+import au.org.ala.bhl.service.CacheControlBlock;
+import au.org.ala.bhl.service.DocumentCacheService;
 
 public class IndexerWorker extends AbstractBHLActor {
 
     private final String _serverURL;
     private SolrServer _server;
+    private TaxonGrab _taxonGrab;    
+    private DocumentCacheService _docCache;
 
     private static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
 
-    public IndexerWorker(String serverUrl) {
+    public IndexerWorker(String serverUrl, String cacheDir) {
         _serverURL = serverUrl;
         _server = getSolrServer();
+        _taxonGrab = new TaxonGrab();        
+        _docCache = new DocumentCacheService(cacheDir);
     }
 
     private SolrServer getSolrServer() {
@@ -72,8 +84,33 @@ public class IndexerWorker extends AbstractBHLActor {
         if (!StringUtils.isEmpty(pageText)) {
             SolrInputDocument doc = new SolrInputDocument();
             doc.addField("id", pageId, 1.0f);
-            doc.addField("name", item.getName(), 1.0f);
+            doc.addField("name", item.getTitle(), 1.0f);
             doc.addField("text", pageText);
+            doc.addField("internetArchiveId", item.getInternetArchiveId());
+            doc.addField("itemId", item.getItemId());
+            doc.addField("pageId", pageId, 1.0f);
+            
+            String language = "english";
+            
+            CacheControlBlock ccb = _docCache.getCacheControl(item.getInternetArchiveId()); 
+            if (ccb != null && !StringUtils.isEmpty(ccb.Language)) {
+            	language = ccb.Language;            
+            }
+
+			LanguageScore score = WordLists.detectLanguage(pageText, language);
+			String lang = language;
+			if (score != null &&  ! StringUtils.equalsIgnoreCase(score.getName(), language) && score.getScore() > .75) {
+				log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s", item.getItemId(), pageId, score.getName(), score.getScore(), language);
+				lang = score.getName();
+			}
+            
+            List<String> names = _taxonGrab.findNames(pageText, lang);
+            if (names.size() > 0) {
+            	String namesStr = StringUtils.join(names, ",");
+            	doc.addField("taxonNames", namesStr);
+            	log("Names detected in page %s (%s) : %s", pageId, item.getInternetArchiveId(), namesStr);
+            }
+            
             try {
                 _server.add(doc);
             } catch (Exception ex) {

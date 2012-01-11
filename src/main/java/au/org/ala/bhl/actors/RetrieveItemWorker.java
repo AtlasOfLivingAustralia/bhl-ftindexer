@@ -12,6 +12,7 @@ import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.messages.RetrieveAndIndexItemText;
 import au.org.ala.bhl.messages.RetrieveItemText;
+import au.org.ala.bhl.service.CacheControlBlock;
 import au.org.ala.bhl.service.DocumentCacheService;
 
 public class RetrieveItemWorker extends AbstractBHLActor {
@@ -32,10 +33,11 @@ public class RetrieveItemWorker extends AbstractBHLActor {
             ItemDescriptor item = indexMessage.getItem();
             final String iaId = item.getInternetArchiveId();
             String itemDir = _docCache.getItemDirectoryPath(iaId);
-            String completeFilePath = String.format("%s%s.complete", itemDir, SEPARATOR);
-            File completeFile = new File(completeFilePath);
+            //String completeFilePath = String.format("%s%s.complete", itemDir, SEPARATOR);
+            //File completeFile = new File(completeFilePath);
+            CacheControlBlock ccb = _docCache.getCacheControl(item.getInternetArchiveId());
             File f = new File(itemDir);
-            if (f.exists() && completeFile.exists()) {
+            if (f.exists() && ccb != null) {
                 if (message instanceof RetrieveAndIndexItemText) {
                     log("Reindexing existing item: %s", itemDir);
                     indexMessage.getController().indexItem(item, itemDir);
@@ -59,7 +61,8 @@ public class RetrieveItemWorker extends AbstractBHLActor {
                     processPageMetaData(node, item);
 
                     getItemsService().setItemStatus(item.getItemId(), ItemStatus.FETCHED, 0);
-                    FileUtils.writeStringToFile(completeFile, String.format("%s", Calendar.getInstance().getTime()));
+                    _docCache.createCacheControl(item);
+                    // FileUtils.writeStringToFile(completeFile, String.format("%s", Calendar.getInstance().getTime()));
                 } else {
                     log("Failed to get item meta data from BHL-AU for item %s", item.getItemId());
                 }

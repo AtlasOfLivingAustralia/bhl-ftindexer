@@ -90,26 +90,26 @@ public class IndexerWorker extends AbstractBHLActor {
             doc.addField("itemId", item.getItemId());
             doc.addField("pageId", pageId, 1.0f);
             
-            String language = "english";
-            
-            CacheControlBlock ccb = _docCache.getCacheControl(item.getInternetArchiveId()); 
-            if (ccb != null && !StringUtils.isEmpty(ccb.Language)) {
-            	language = ccb.Language;            
-            }
-
-			LanguageScore score = WordLists.detectLanguage(pageText, language);
-			String lang = language;
-			if (score != null &&  ! StringUtils.equalsIgnoreCase(score.getName(), language) && score.getScore() > .75) {
-				log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s", item.getItemId(), pageId, score.getName(), score.getScore(), language);
-				lang = score.getName();
-			}
-            
-            List<String> names = _taxonGrab.findNames(pageText, lang);
-            if (names.size() > 0) {
-            	String namesStr = StringUtils.join(names, ",");
-            	doc.addField("taxonNames", namesStr);
-            	log("Names detected in page %s (%s) : %s", pageId, item.getInternetArchiveId(), namesStr);
-            }
+//            String language = "english";
+//            
+//            CacheControlBlock ccb = _docCache.getCacheControl(item.getInternetArchiveId()); 
+//            if (ccb != null && !StringUtils.isEmpty(ccb.Language)) {
+//            	language = ccb.Language;            
+//            }
+//
+//			LanguageScore score = WordLists.detectLanguage(pageText, language);
+//			String lang = language;
+//			if (score != null &&  ! StringUtils.equalsIgnoreCase(score.getName(), language) && score.getScore() > .75) {
+//				log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s", item.getItemId(), pageId, score.getName(), score.getScore(), language);
+//				lang = score.getName();
+//			}
+//            
+//            List<String> names = _taxonGrab.findNames(pageText, lang);
+//            if (names.size() > 0) {
+//            	String namesStr = StringUtils.join(names, ",");
+//            	doc.addField("taxonNames", namesStr);
+//            	log("Names detected in page %s (%s) : %s", pageId, item.getInternetArchiveId(), namesStr);
+//            }
             
             try {
                 _server.add(doc);

@@ -75,7 +75,8 @@ public class TaxonGrab {
             analyse(word, _lexicon, state);
         }
 
-        return removeUnverifiedNames(state.Taxa);
+        // return removeUnverifiedNames(state.Taxa);
+        return new ArrayList<String>(state.Taxa);
     }
     
     private List<String> removeUnverifiedNames(Collection<String> names) {

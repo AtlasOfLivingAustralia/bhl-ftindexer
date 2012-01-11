@@ -25,11 +25,22 @@ public class WebServiceHelper {
         if (entity != null) {
             InputStream instream = entity.getContent();
             @SuppressWarnings("unchecked")
-            List<String> lines = IOUtils.readLines(instream, "utf-8");            
-            JsonNode root = new ObjectMapper().readValue(StringUtils.join(lines, "\n"), JsonNode.class);
-            return root; 
+            List<String> lines = IOUtils.readLines(instream, "utf-8");
+            String text = StringUtils.join(lines, "\n");
+            try {
+            	JsonNode root = new ObjectMapper().readValue(text, JsonNode.class);
+            	return root;
+            } catch (Exception ex) {            	
+            	log("Error parsing results for request: %s\n%s\n", uri, text);
+            	ex.printStackTrace();
+            }
+             
         }        
         return null;
+    }
+    
+    private static void log(String format, Object ... args) {
+    	LogService.log(WebServiceHelper.class, format, args);
     }
     
     public static String getText(String uri) throws IOException {               

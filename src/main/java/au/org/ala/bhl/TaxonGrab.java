@@ -43,7 +43,7 @@ public class TaxonGrab {
 
     static {
         ACCENTS = createSubstList(SUBST("á", "a"), SUBST("é", "e"), SUBST("í", "i"), SUBST("ó", "o"), SUBST("ú", "u"));
-        SYMBOLS = createSubstList(SUBST(" -\r", " - "), SUBST(" -\n", " - "), SUBST("-\r", ""), SUBST("-\n", ""), SUBST("\r", " "), SUBST("\t", ""), SUBST(":", " "), SUBST(";", " "), SUBST(".", ". "));
+        SYMBOLS = createSubstList(SUBST(" -\r", " - "), SUBST(" -\n", " - "), SUBST("-\r", ""), SUBST("-\n", ""), SUBST("\r", " "), SUBST("\n", " "), SUBST("\t", ""), SUBST(":", " "), SUBST(";", " "), SUBST(".", ". "));
     }
     
     private Set<String> _lexicon;

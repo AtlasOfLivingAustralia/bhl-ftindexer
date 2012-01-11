@@ -34,8 +34,6 @@ public class RetrieveItemsCommand extends AbstractCommand {
     }
 
     public void defineOptions(Options options) {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -55,8 +55,7 @@ public class IndexItemsCommand extends AbstractCommand {
     public void defineOptions(Options options) {
         options.addOption("indexlocalonly", true, "Index the documents already in the local document cache only");
         options.addOption("solrserver", true, "URL for the SOLR instance (index-items)");
-        options.addOption("retrievethreads", true, "The number of document retrieving threads (index-items)");
-        options.addOption("indexingthreads", true, "The number of indexing threads (index-items)");
+        options.addOption("threads", true, "The number of concurrent threads to use");
     }
 
 }

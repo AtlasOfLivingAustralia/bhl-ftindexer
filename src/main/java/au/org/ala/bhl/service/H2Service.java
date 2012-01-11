@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 
-public abstract class H2Service {
+public abstract class H2Service extends AbstractService {
 
 	private String _path;
 	private Connection _connection;
@@ -18,10 +18,6 @@ public abstract class H2Service {
 		_path = path;
 		_connection = createConnection();
 		init();
-	}
-
-	protected void log(String format, Object... args) {
-		LogService.log(H2Service.class, format, args);
 	}
 
 	protected abstract void init();

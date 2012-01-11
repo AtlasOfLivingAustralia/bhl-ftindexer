@@ -7,14 +7,9 @@ public class IndexerOptions {
     private boolean _indexDocCacheOnly;
     private String _sourceFilename;
     private String _docCachePath;
-    private String _solrServerUrl;
-    
-    private String _outputFile;
-    
-    private int _retrieveThreads;
-    private int _indexingThreads;
-    private int _utilityThreads;
-    
+    private String _solrServerUrl;  
+    private String _outputFile;    
+    private int _jobThreads;    
     private String _itemFilter;
     
     public IndexerOptions(CommandLine line) {
@@ -25,9 +20,7 @@ public class IndexerOptions {
         
         _docCachePath = line.getOptionValue("doccache", "/data/bhl-ftindex/doccache");
         _solrServerUrl = line.getOptionValue("solrserver", "http://localhost:8983/solr");
-        _retrieveThreads = Integer.parseInt(line.getOptionValue("retrievethreads", "20"));
-        _indexingThreads = Integer.parseInt(line.getOptionValue("indexingthreads", "1"));
-        _utilityThreads = Integer.parseInt(line.getOptionValue("utilitythreads", "2"));
+        _jobThreads = Integer.parseInt(line.getOptionValue("threads", "1"));
         
         _outputFile = line.getOptionValue("o", "out.txt");
         
@@ -67,25 +60,25 @@ public class IndexerOptions {
         _solrServerUrl = url;
     }
     
-    public int getRetrieveThreadCount() {
-        return _retrieveThreads;
+//    public int getRetrieveThreadCount() {
+//        return _retrieveThreads;
+//    }
+//    
+//    public void setRetrieveThreadCount(int count) {
+//        _retrieveThreads = count;
+//    }
+//    
+//    public int getIndexerThreadCount() {
+//        return _indexingThreads;
+//    }
+    
+    public int getThreadCount() {
+    	return _jobThreads;
     }
     
-    public void setRetrieveThreadCount(int count) {
-        _retrieveThreads = count;
-    }
-    
-    public int getIndexerThreadCount() {
-        return _indexingThreads;
-    }
-    
-    public int getUtilityThreadCount() {
-    	return _utilityThreads;
-    }
-    
-    public void setIndexerThreadCount(int count) {
-        _indexingThreads = count;
-    }
+//    public void setIndexerThreadCount(int count) {
+//        _indexingThreads = count;
+//    }
     
     public String getOutputFile() {
     	return _outputFile;

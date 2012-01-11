@@ -2,6 +2,7 @@ package au.org.ala.bhl.service;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,10 +14,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.NullNode;
 
 import au.org.ala.bhl.ItemDescriptor;
+import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.Timer;
 import au.org.ala.bhl.to.ItemTO;
 
-public class DocumentCacheService {
+public class DocumentCacheService extends AbstractService {
 
 	private String _cacheDir;
 	public static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
@@ -46,10 +48,6 @@ public class DocumentCacheService {
 	public String getItemDirectoryPath(ItemTO item) {
 		String subdir = item.getInternetArchiveId().substring(0,1).toLowerCase();
 		return String.format("%s%s%s%s%s", _cacheDir, SEPARATOR, subdir, SEPARATOR, item.getInternetArchiveId());
-	}
-
-	protected void log(String format, Object... args) {
-		LogService.log(H2Service.class, format, args);
 	}
 
 	public void forEachItem(final CachedItemHandler handler) {
@@ -144,6 +142,83 @@ public class DocumentCacheService {
 		}
 		
 	}
+	
+	public void retrieveItem(ItemDescriptor item, boolean forceOverwrite) {
+        final String iaId = item.getInternetArchiveId();
+        String itemDir = getItemDirectoryPath(iaId);
+        //String completeFilePath = String.format("%s%s.complete", itemDir, SEPARATOR);
+        //File completeFile = new File(completeFilePath);
+        CacheControlBlock ccb = getCacheControl(item.getInternetArchiveId());
+        
+        File documentDir = new File(itemDir);
+        
+        if (documentDir.exists() && forceOverwrite) {
+        	documentDir.delete();
+        }
+        
+        if (ccb != null && documentDir.exists()) {
+        	log("Cache control block already exists for item %s. Skipping retrieve.", item.getItemId());
+        	return;
+        }
+
+        try {
+            log("Retrieving missing or incomplete item %s (IA: %s)", item.getItemId(), item.getInternetArchiveId());               
+            JsonNode node = WebServiceHelper.getJSON(item.getItemMetaDataURL());
+            if (node != null) {
+                if (!documentDir.exists()) {
+                    log("Creating directory: %s", documentDir.getAbsoluteFile());
+                    documentDir.mkdir();
+                }
+
+                downloadItemPages(node, item, itemDir);
+
+                getItemsService().setItemStatus(item.getItemId(), ItemStatus.FETCHED, 0);
+                createCacheControl(item);
+            } else {
+                log("Failed to get item meta data from BHL-AU for item %s", item.getItemId());
+            }
+
+            getItemsService().setItemLocalPath(item.getItemId(), itemDir);
+                        
+        } catch (Exception ex) {
+            log(ex.getMessage());
+        }
+		
+	}
+	
+    private boolean downloadItemPages(JsonNode root, ItemDescriptor item, String itemDir) throws IOException {
+        JsonNode pagesNode = root.path("Result").path("Pages");
+        if (pagesNode != null && pagesNode.isArray()) {
+            int pageCount = 0;
+            int skipCount = 0;
+            for (int i = 0; i < pagesNode.size(); ++i) {
+                JsonNode node = pagesNode.get(i);
+                int pageId = node.get("PageID").getIntValue();
+                String pagePath = String.format("%s%s%05d_%d.txt", itemDir, SEPARATOR, i, pageId);
+                File pageFile = new File(pagePath);
+                if (!pageFile.exists()) {
+                    String ocrURL = node.get("OcrUrl").getTextValue();
+                    if (StringUtils.isNotEmpty(ocrURL)) {
+                        log("Retrieving page %d of %d (Page ID %d for item %s)", i+1, pagesNode.size(), pageId, item.getItemId());
+                        String ocr = WebServiceHelper.getText(ocrURL);
+                        FileUtils.writeStringToFile(pageFile, ocr);
+                        pageCount++;
+                    } else {
+                        log("OCR text is empty for item %s (IA: %s)", item.getItemId(), item.getInternetArchiveId());
+                    }
+                } else {
+                    skipCount++;
+                }
+
+            }
+            log("Item text retrieved for item %s (IA: %s) - %d pages of OCR retrieved, %d existing pages skipped.", item.getItemId(), item.getInternetArchiveId(), pageCount, skipCount);
+            return true;
+        } else {
+            log("No pages found for item %s (IA: %s). Skipping.", item.getItemId(), item.getInternetArchiveId());
+        }
+        return false;
+    }
+	
 	
 	public JsonNode getItemMetaData(ItemDescriptor item) {
 		try {

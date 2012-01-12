@@ -86,6 +86,7 @@ public class IndexingService extends AbstractService {
 			doc.addField("internetArchiveId", item.getInternetArchiveId());
 			doc.addField("itemId", item.getItemId());
 			doc.addField("pageId", pageId, 1.0f);
+			doc.addField("pageUrl", String.format("http://bhl.ala.org.au/pageimage/%s", pageId));
 
 			// String language = "english";
 			//

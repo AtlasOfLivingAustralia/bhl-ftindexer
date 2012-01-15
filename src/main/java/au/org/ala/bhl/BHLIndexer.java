@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import au.org.ala.bhl.command.CacheStatsCommand;
 import au.org.ala.bhl.command.CommandLineCommand;
 import au.org.ala.bhl.command.ExtractNamesCommand;
+import au.org.ala.bhl.command.ExtractPlacesCommand;
 import au.org.ala.bhl.command.ImportItemsCommand;
 import au.org.ala.bhl.command.IndexItemsCommand;
 import au.org.ala.bhl.command.MaintainCacheCommand;
@@ -36,6 +37,7 @@ public class BHLIndexer {
 		// registerCommand(PaginateDocCacheCommand.class);
 		registerCommand(RetrieveItemsCommand.class);
 		registerCommand(ExtractNamesCommand.class);
+		registerCommand(ExtractPlacesCommand.class);
 		registerCommand(UpdateCacheControlCommand.class);
 		registerCommand(CacheStatsCommand.class);
 		registerCommand(ResetStatusCommand.class);

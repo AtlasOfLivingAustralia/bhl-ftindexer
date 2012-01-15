@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2011 Atlas of Living Australia
+ * All Rights Reserved.
+ *   
+ * The contents of this file are subject to the Mozilla Public
+ * License Version 1.1 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.mozilla.org/MPL/
+ *   
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ ******************************************************************************/
 package au.org.ala.bhl.service;
 
 import java.io.File;
@@ -59,10 +73,17 @@ public class DocumentCacheService extends AbstractService {
 
 		if (topLevel.exists() && topLevel.isDirectory()) {
 			int itemCount = topLevel.list().length;
-			log("Traversing item cache (%d items)...", itemCount);
+			log("Traversing item cache (%d partitions)...", itemCount);
 			FileItemAdaptor h = new FileItemAdaptor(handler, itemCount);
 			Timer t = new Timer("Traversing items in cache");
-			topLevel.listFiles(h);
+			String[] partitions =  topLevel.list();
+			for (String partition : partitions) {				
+				File partDir = new File(topLevel.getAbsolutePath() + SEPARATOR + partition);
+				if (partDir.exists() && partDir.isDirectory()) {
+					log("Traversing partition '%s'...", partition);
+					partDir.listFiles(h);
+				}
+			}
 			t.stop(true, false, String.format("%d items traversed.", h.getCount()));
 		}
 	}

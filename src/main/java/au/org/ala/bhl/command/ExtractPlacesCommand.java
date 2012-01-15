@@ -22,58 +22,39 @@ import java.util.List;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.bhl.Command;
 import au.org.ala.bhl.IndexerOptions;
-import au.org.ala.bhl.LanguageScore;
-import au.org.ala.bhl.TaxonGrab;
-import au.org.ala.bhl.WordLists;
-import au.org.ala.bhl.service.CacheControlBlock;
+import au.org.ala.bhl.PlaceGrab;
 import au.org.ala.bhl.service.CachedItemPageHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 
-@Command(name = "extract-names")
-public class ExtractNamesCommand extends AbstractCommand {
-	
-	
+@Command(name = "extract-places")
+public class ExtractPlacesCommand extends AbstractCommand {
 
-	public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
-
+	public void execute(ItemsService service, IndexerOptions options) throws Exception {
 		final DocumentCacheService cache = new DocumentCacheService(options.getDocCachePath());
-		final TaxonGrab nameGrabber = new TaxonGrab();
+		final PlaceGrab placeGrab = new PlaceGrab();
 		final File outputFile = new File(options.getOutputFile());
-		
+
 		if (outputFile.exists()) {
 			outputFile.delete();
 		}
-		
+
 		final Writer writer = new FileWriter(outputFile);
 
 		cache.forEachItemPage(new CachedItemPageHandler() {
-			
-			private String _language = "";
-			
-			
+
 			public void onPage(String internetArchiveId, String pageId, File pageFile) {
 
 				try {
 					String text = FileUtils.readFileToString(pageFile);
-					LanguageScore score = WordLists.detectLanguage(text, _language);
-					String lang = _language;					
-					if (score != null &&  ! StringUtils.equalsIgnoreCase(score.getName(), _language) && score.getScore() > .75) {
-						log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s", internetArchiveId, pageId, score.getName(), score.getScore(), _language);
-						lang = score.getName();
-						if (score.getScore() == 1.0) {
-							System.err.println("Here");
-						}
-					}
-					
-					List<String> names = nameGrabber.findNames(text, lang);
-					for (String name : names) {
-						String line = String.format("%s,%s,\"%s\",\"%s\"\n", internetArchiveId, pageId, name, pageFile.getName());
-						writer.write(line);
+					List<String> places = placeGrab.findPlaces(text);
+					for (String place : places) {
+						String line = String.format("%s,%s,\"%s\",\"%s\"\n", internetArchiveId, pageId, place, pageFile.getName());
+						writer.write(line);						
+						System.err.println(place);
 					}
 				} catch (IOException ioex) {
 					throw new RuntimeException(ioex);
@@ -82,11 +63,7 @@ public class ExtractNamesCommand extends AbstractCommand {
 			}
 
 			public void startItem(String internetArchiveId) {
-				CacheControlBlock ccb = cache.getCacheControl(internetArchiveId);
-				if (ccb != null) {
-					_language = ccb.Language;
-				}
-				log("Starting item %s (%s)", internetArchiveId, _language);
+				log("Starting item %s", internetArchiveId);
 			}
 
 			public void endItem(String itemId) {
@@ -95,14 +72,13 @@ public class ExtractNamesCommand extends AbstractCommand {
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
-				_language = "";				
 			}
-			
+
 		});
+
 	}
 
 	public void defineOptions(Options options) {
-		options.addOption("o", true, "Output file for dumps, reports etc");
 	}
 
 }

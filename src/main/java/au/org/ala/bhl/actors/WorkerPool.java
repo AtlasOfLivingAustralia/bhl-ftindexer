@@ -21,6 +21,13 @@ import akka.actor.UntypedActor;
 import akka.actor.UntypedActorFactory;
 import akka.routing.Routing;
 
+/**
+ * Represents a pool of typed actors, to which jobs are allocated in a round robin fashion
+ * 
+ * @author baird
+ *
+ * @param <T>
+ */
 public abstract class WorkerPool<T extends Actor> extends AbstractBHLActor {
     
     private int _workerCount;

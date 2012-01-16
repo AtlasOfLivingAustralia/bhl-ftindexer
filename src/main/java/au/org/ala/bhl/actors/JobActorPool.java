@@ -16,6 +16,13 @@ package au.org.ala.bhl.actors;
 
 import au.org.ala.bhl.IndexerOptions;
 
+/**
+ * Represents a pool of JobWorker actors. Jobs are routed in a round robin fashion amongst all instances in the pool.
+ * The pool size is determined by the thread count option 
+ * 
+ * @author baird
+ *
+ */
 public class JobActorPool extends WorkerPool<JobWorker> {
 	
 	private IndexerOptions _options;

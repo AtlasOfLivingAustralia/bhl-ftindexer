@@ -24,18 +24,32 @@ import au.org.ala.bhl.messages.UpdateCacheControl;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.IndexingService;
 
+/**
+ * Actor resposible for executing the various tasks that require concurrency. Tasks are identified by their message type, and each message should be unique and
+ * contain all necessary information required by the task so that thread safety can be preserved.
+ *  
+ * @author baird
+ *
+ */
 public class JobWorker extends AbstractBHLActor {
 
 	private DocumentCacheService _docCache;
 	private IndexingService _indexingService;
 	protected IndexerOptions _options;
 
+	/**
+	 * Ctor
+	 * @param options
+	 */
 	public JobWorker(IndexerOptions options) {
 		_options = options;
 		_docCache = new DocumentCacheService(options.getDocCachePath());
 		_indexingService = new IndexingService(options.getSolrServerURL(), _docCache);
 	}
 
+	/**
+	 * Simply switches on message type and delegates to a method that understands each message type
+	 */
 	@Override
 	public void onReceive(Object message) throws Exception {
 		
@@ -58,10 +72,18 @@ public class JobWorker extends AbstractBHLActor {
 		}
 	}
 
+	/**
+	 * Index an item
+	 * @param msg
+	 */
 	private void indexItem(IndexText msg) {
 		_indexingService.indexItem(msg.getItem());
 	}
 
+	/** 
+	 * Retrieve ocr text for an item and store in the document cache
+	 * @param msg
+	 */
 	private void retrieveItem(RetrieveItemText msg) {		
 		_docCache.retrieveItem(msg.getItem(), true);
 		if (msg instanceof RetrieveAndIndexItemText) {
@@ -69,6 +91,11 @@ public class JobWorker extends AbstractBHLActor {
 		}
 	}
 
+	/**
+	 * Update the cache control block for an item
+	 * 
+	 * @param msg
+	 */
 	private void updateCacheControl(UpdateCacheControl msg) {
 		ItemDescriptor item = msg.getItem();
 		_docCache.createCacheControl(item);

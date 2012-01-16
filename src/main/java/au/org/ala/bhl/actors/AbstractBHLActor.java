@@ -23,14 +23,29 @@ import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.service.LogService;
 import au.org.ala.bhl.service.WebServiceHelper;
 
+/**
+ * Base class for all actors. Provides access to an ItemsService as well as adding from convenience helper functions
+ *  
+ * @author baird
+ *
+ */
 public abstract class AbstractBHLActor extends UntypedActor {
 
 	private ItemsService _service;
 
+	/**
+	 * Logs a message via the logging service
+	 * 
+	 * @param format
+	 * @param args
+	 */
 	protected void log(String format, Object... args) {
 		LogService.log(this.getClass(), format, args);
 	}
 
+	/*
+	 * get an instance of the items service
+	 */
 	protected ItemsService getItemsService() {
 		if (_service == null) {
 			_service = new ItemsService();
@@ -38,10 +53,22 @@ public abstract class AbstractBHLActor extends UntypedActor {
 		return _service;
 	}
 
+	/**
+	 * Make a web service call that returns JSON
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
 	protected JsonNode webServiceCallJson(String uri) throws IOException {
 		return WebServiceHelper.getJSON(uri);
 	}
 
+	/**
+	 * Retrieve the document text addressed by a URL.
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
 	protected String webGetText(String uri) throws IOException {
 		return WebServiceHelper.getText(uri);
 	}

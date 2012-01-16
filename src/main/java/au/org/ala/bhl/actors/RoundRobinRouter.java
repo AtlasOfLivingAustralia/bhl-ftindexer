@@ -21,6 +21,12 @@ import akka.routing.CyclicIterator;
 import akka.routing.InfiniteIterator;
 import akka.routing.UntypedLoadBalancer;
 
+/**
+ * Actor load balancer that routes jobs in a round robin fashion (CyclicIterator)
+ * 
+ * @author baird
+ *
+ */
 public class RoundRobinRouter extends UntypedLoadBalancer {
 
     private final InfiniteIterator<ActorRef> _workers;        

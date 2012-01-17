@@ -19,9 +19,27 @@ import org.apache.commons.cli.Options;
 import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.service.ItemsService;
 
+/**
+ * Interface that describes a command-line application command
+ * 
+ * @author baird
+ *
+ */
 public interface CommandLineCommand {
-    
+   
+	/**
+	 * Actually executes the command
+	 * 
+	 * @param service
+	 * @param options
+	 * @throws Exception
+	 */
     void execute(final ItemsService service, final IndexerOptions options) throws Exception;
+    
+    /**
+     * Allows the command to describe what options it expects
+     * @param options
+     */
     void defineOptions(final Options options);
     
 }

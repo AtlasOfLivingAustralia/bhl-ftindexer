@@ -34,6 +34,12 @@ import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.service.LogService;
 
+/**
+ * This command imports a list of items (and associated meta data) from a CSV file into the database.
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "import-items")
 public class ImportItemsCommand extends AbstractCommand {
 
@@ -51,7 +57,12 @@ public class ImportItemsCommand extends AbstractCommand {
         processItemsFile(options, importer, createItemDescriptorFilter(options));        
         log("%d Items Imported.", importer.getItemCount());
     }
-    
+ 
+    /**
+     * Creates an item descriptor filter based on the command line options
+     * @param options
+     * @return
+     */
     private static ItemDescriptorFilter createItemDescriptorFilter(IndexerOptions options) {
     	if (!StringUtils.isEmpty(options.getItemFilter())) {
     		return new ItemDescriptorIAIdFilter(options.getItemFilter());
@@ -59,6 +70,14 @@ public class ImportItemsCommand extends AbstractCommand {
     	return null;
     }
 
+    /**
+     * Work horse. Reads each line of the CSV file, and creates an Item Descriptor. If the item descriptor is accepted by the filter (by default all items will be
+     * accepted), the item is imported into the database.
+     * @param options
+     * @param handler
+     * @param filter
+     * @throws Exception
+     */
     private static void processItemsFile(final IndexerOptions options, ItemsFileHandler handler, ItemDescriptorFilter filter) throws Exception {
         String sourceFile = options.getSourceFilename();
         File f = new File(sourceFile);

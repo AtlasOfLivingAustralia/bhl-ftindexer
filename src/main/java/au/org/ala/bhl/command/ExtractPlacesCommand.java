@@ -30,12 +30,17 @@ import au.org.ala.bhl.service.CachedItemPageHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 
+/**
+ * Experimental command that attempts to locate localities (place names, lat longs etc) from the ocr text held in the document cache
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "extract-places")
 public class ExtractPlacesCommand extends AbstractCommand {
 
 	public void execute(ItemsService service, IndexerOptions options) throws Exception {
 		final DocumentCacheService cache = new DocumentCacheService(options.getDocCachePath());
-		final PlaceGrab placeGrab = new PlaceGrab();
 		final File outputFile = new File(options.getOutputFile());
 
 		if (outputFile.exists()) {
@@ -50,7 +55,7 @@ public class ExtractPlacesCommand extends AbstractCommand {
 
 				try {
 					String text = FileUtils.readFileToString(pageFile);
-					List<String> places = placeGrab.findPlaces(text);
+					List<String> places = PlaceGrab.findPlaces(text);
 					for (String place : places) {
 						String line = String.format("%s,%s,\"%s\",\"%s\"\n", internetArchiveId, pageId, place, pageFile.getName());
 						writer.write(line);						
@@ -78,6 +83,9 @@ public class ExtractPlacesCommand extends AbstractCommand {
 
 	}
 
+	/**
+	 * 
+	 */
 	public void defineOptions(Options options) {
 	}
 

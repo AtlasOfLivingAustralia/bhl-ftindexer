@@ -27,6 +27,12 @@ import au.org.ala.bhl.service.CachedItemHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 
+/**
+ * cache-stats dumps a brief report of the state of the document-cache and index as held in the database
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "cache-stats")
 public class CacheStatsCommand extends AbstractCommand {
 

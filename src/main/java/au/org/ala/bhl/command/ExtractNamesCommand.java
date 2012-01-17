@@ -34,10 +34,14 @@ import au.org.ala.bhl.service.CachedItemPageHandler;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 
+/**
+ * Experimental command that attempts to identify taxonomic names in the OCR'd text held in the document cache
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "extract-names")
 public class ExtractNamesCommand extends AbstractCommand {
-	
-	
 
 	public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
 

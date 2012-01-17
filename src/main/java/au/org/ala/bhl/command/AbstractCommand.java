@@ -25,16 +25,40 @@ import au.org.ala.bhl.ItemFilter;
 import au.org.ala.bhl.service.LogService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Base class for 'command line' commands. Provides some convenience methods for logging etc...
+ * 
+ * @author baird
+ *
+ */
 public abstract class AbstractCommand implements CommandLineCommand {
 
+	/**
+	 * Log a message via the logging service
+	 * 
+	 * @param format
+	 * @param args
+	 */
     protected void log(String format, Object... args) {
         LogService.log(this.getClass(), format, args);
     }
     
+    /**
+     * Creates an item descriptor from an ItemTO
+     * 
+     * @param item
+     * @return
+     */
     protected ItemDescriptor createItemDescriptor(ItemTO item) {
         return new ItemDescriptor(item.getPrimaryTitleId(), item.getItemId(), item.getInternetArchiveId(), item.getTitle(), item.getVolume());
     }
 
+    /**
+     * Create an ItemFilter from the command line options
+     * 
+     * @param options
+     * @return
+     */
     protected ItemFilter createItemFilter(IndexerOptions options) {
     	if (!StringUtils.isEmpty(options.getItemFilter())) {
     		return new InternetArchiveIDRegexFilter(options.getItemFilter());

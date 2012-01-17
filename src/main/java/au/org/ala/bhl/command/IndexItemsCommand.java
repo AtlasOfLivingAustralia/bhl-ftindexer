@@ -29,6 +29,12 @@ import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Traverses each item in the database a schedules an index-item job.
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "index-items")
 public class IndexItemsCommand extends AbstractCommand {
 

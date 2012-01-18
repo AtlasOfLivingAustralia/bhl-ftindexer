@@ -14,6 +14,12 @@
  ******************************************************************************/
 package au.org.ala.bhl;
 
+/**
+ * Handler interface for items held in the doc cache
+ * 
+ * @author baird
+ *
+ */
 public interface ItemsFileHandler {
     void onItem(ItemDescriptor item);
 }

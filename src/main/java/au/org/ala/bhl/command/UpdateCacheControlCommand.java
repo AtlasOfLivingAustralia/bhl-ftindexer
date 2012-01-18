@@ -23,6 +23,12 @@ import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * For each item that exists in the doc cache, document item meta data is extracted from BHL and stored in the .metadata file (JSON)
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "update-cache-control")
 public class UpdateCacheControlCommand extends AbstractCommand {
 

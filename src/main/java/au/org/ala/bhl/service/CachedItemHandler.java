@@ -16,6 +16,12 @@ package au.org.ala.bhl.service;
 
 import java.io.File;
 
+/**
+ * Interface used to 'visit' each item in the document cache
+ * 
+ * @author baird
+ *
+ */
 public interface CachedItemHandler {
 	void onItem(File itemDir);
 	void onProgress(int countComplete, int percentComplete);

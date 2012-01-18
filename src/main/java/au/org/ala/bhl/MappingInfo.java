@@ -17,6 +17,11 @@ package au.org.ala.bhl;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Annotation class that allows TO's to provide mapping hints to automatic OR mapping 
+ * @author baird
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MappingInfo {
     

@@ -26,6 +26,12 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Utility class that holds lexicons in various languages.
+ * 
+ * @author baird
+ *
+ */
 public class WordLists {
 
 	private static HashMap<String, Set<String>> _wordLists = new HashMap<String, Set<String>>();

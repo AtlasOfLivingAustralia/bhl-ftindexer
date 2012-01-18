@@ -16,6 +16,12 @@ package au.org.ala.bhl.service;
 
 import java.io.File;
 
+/**
+ * Interface for visitor to each page for each item in the doc page
+ * 
+ * @author baird
+ *
+ */
 public interface CachedItemPageHandler {
 	
 	void startItem(String itemId);

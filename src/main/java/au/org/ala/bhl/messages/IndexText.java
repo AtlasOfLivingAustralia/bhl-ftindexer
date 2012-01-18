@@ -17,6 +17,12 @@ package au.org.ala.bhl.messages;
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.IndexingController;
 
+/**
+ * Message for triggering the indexing of a particular item
+ * 
+ * @author baird
+ *
+ */
 public class IndexText extends AbstractItemMessage {
     
     private final ItemDescriptor _item;

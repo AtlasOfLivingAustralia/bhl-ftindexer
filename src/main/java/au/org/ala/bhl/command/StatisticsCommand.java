@@ -28,6 +28,12 @@ import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Dumps some basic stats about the doccache and item status to standard out
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "stats")
 public class StatisticsCommand extends AbstractCommand {
 

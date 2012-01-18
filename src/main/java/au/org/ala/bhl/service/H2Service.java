@@ -23,6 +23,11 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 
+/**
+ * Base class for services that are backed by a H2 database
+ * @author baird
+ *
+ */
 public abstract class H2Service extends AbstractService {
 
 	private String _path;
@@ -36,6 +41,13 @@ public abstract class H2Service extends AbstractService {
 
 	protected abstract void init();
 
+	/**
+	 * Executes a query, and invokes the handler for each row returned
+	 * 
+	 * @param sql
+	 * @param handler
+	 * @param params
+	 */
 	protected void queryForEach(final String sql, final ResultSetHandler handler, final Object... params) {
 		statement(sql, new StatementHandler() {
 			public void withStatement(PreparedStatement stmt) throws SQLException {
@@ -57,6 +69,11 @@ public abstract class H2Service extends AbstractService {
 
 	}
 
+	/**
+	 * Executes a non-query statement (update, insert, delete etc).
+	 * @param sql
+	 * @param params
+	 */
 	protected void nonQuery(String sql, final Object... params) {
 		statement(sql, new StatementHandler() {
 			public void withStatement(PreparedStatement stmt) throws SQLException {
@@ -66,6 +83,13 @@ public abstract class H2Service extends AbstractService {
 		}, params);
 	}
 
+	/**
+	 * Helper used to set parameter values on parameterised statements
+	 * 
+	 * @param stmt
+	 * @param params
+	 * @throws SQLException
+	 */
 	private void setParameters(PreparedStatement stmt, Object[] params) throws SQLException {
 		for (int i = 0; i < params.length; ++i) {
 			Object param = params[i];
@@ -86,6 +110,13 @@ public abstract class H2Service extends AbstractService {
 
 	}
 
+	/**
+	 * Execute an update statement
+	 * 
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
 	protected int update(String sql, final Object... params) {
 		final int[] result = new int[1];
 		statement(sql, new StatementHandler() {
@@ -97,6 +128,13 @@ public abstract class H2Service extends AbstractService {
 		return result[0];
 	}
 
+	/**
+	 * Creates a statement that is passed to handler before being correctly closed
+	 * 
+	 * @param sql
+	 * @param handler
+	 * @param params
+	 */
 	protected void statement(String sql, StatementHandler handler, Object... params) {
 		// log("Preparing Statement: %s (%s)", sql, StringUtils.join(params, ", "));
 		Connection con = getConnection();
@@ -119,6 +157,10 @@ public abstract class H2Service extends AbstractService {
 		}
 	}
 
+	/**
+	 * Create a new connection to the database
+	 * @return
+	 */
 	protected Connection createConnection() {
 		try {
 			Class.forName("org.h2.Driver");
@@ -129,6 +171,10 @@ public abstract class H2Service extends AbstractService {
 		}
 	}
 
+	/**
+	 * get a persistent connection
+	 * @return
+	 */
 	protected Connection getConnection() {
 		try {
 			if (_connection == null || _connection.isClosed()) {
@@ -140,10 +186,16 @@ public abstract class H2Service extends AbstractService {
 		}
 	}
 
+	/** 
+	 * @return the current date and time
+	 */
 	protected Date now() {
 		return new Date(Calendar.getInstance().getTime().getTime());
 	}
 
+	/**
+	 * Disconnect from the service. Persistent connections will be closed
+	 */
 	public void disconnect() {
 		try {
 			log("Disconnecting from H2Service");
@@ -155,12 +207,18 @@ public abstract class H2Service extends AbstractService {
 		}
 	}
 
+	/**
+	 * Handler interface for dealing with statements
+	 *
+	 */
 	public interface StatementHandler {
-
 		void withStatement(PreparedStatement stmt) throws SQLException;
-
 	}
 
+	/**
+	 * Handler interface for dealing with result sets
+	 * 
+	 */
 	public interface ResultSetHandler {
 		void onRow(ResultSet rs) throws SQLException;
 	}

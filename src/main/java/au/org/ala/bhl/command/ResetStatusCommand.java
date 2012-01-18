@@ -26,6 +26,13 @@ import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Clears the status of items that do not exist in the document cache, and sets it the fetched if it does. This will
+ * force items to be re-indexed should when the index-items command is run.
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "reset-status")
 public class ResetStatusCommand extends AbstractCommand {
 

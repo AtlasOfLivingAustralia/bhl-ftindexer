@@ -14,6 +14,11 @@
  ******************************************************************************/
 package au.org.ala.bhl;
 
+/**
+ * Enum holding the different states an item can be in (not including the null state)
+ * @author baird
+ *
+ */
 public class ItemStatus {
    
     public static final String FETCHED = "FETCHED";    

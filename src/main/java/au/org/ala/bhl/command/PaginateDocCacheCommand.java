@@ -27,7 +27,16 @@ import au.org.ala.bhl.IndexerOptions;
 import au.org.ala.bhl.PageHandler;
 import au.org.ala.bhl.service.ItemsService;
 
+/**
+ * This command was used to tranistion from the previous doc cache format when the whole OCR XML file was stored for each item. This scheme
+ * resulted in a very large document cache due to the verbosity of the XML. The new scheme, whereby only the text for each page is stored in a subdirectory for
+ * each, required that existing items  in the document cache be 'paginated' and placed in the the right directory.
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "paginate")
+@Deprecated
 public class PaginateDocCacheCommand extends AbstractCommand {
 
 	public void execute(ItemsService service, final IndexerOptions options) throws Exception {

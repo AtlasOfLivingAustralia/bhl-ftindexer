@@ -25,6 +25,12 @@ import au.org.ala.bhl.policy.ItemRetrievePolicy;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Causes the OCR text for each item to retrieved into the document cache, if it doesn't already exist.
+ * 
+ * @author baird
+ *
+ */
 @Command(name = "retrieve-items")
 public class RetrieveItemsCommand extends AbstractCommand {
 

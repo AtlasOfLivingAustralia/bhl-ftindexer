@@ -22,6 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Utility class that uses reflection to map from a result set to a transfer object
+ * 
+ * @author baird
+ *
+ * @param <T>
+ */
 public class ReflectiveMapper<T> {
     
     private static Map<Class<?>, List<MappingDescriptor>> _mappingsCache = new HashMap<Class<?>, List<MappingDescriptor>>();

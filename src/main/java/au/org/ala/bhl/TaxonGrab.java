@@ -33,6 +33,12 @@ import org.codehaus.jackson.JsonNode;
 
 import au.org.ala.bhl.service.WebServiceHelper;
 
+/**
+ * Experimental utility class that attempts to identify taxon names in free text
+ * 
+ * @author baird
+ *
+ */
 public class TaxonGrab {
 
     static List<SubstPattern> ACCENTS;

@@ -17,6 +17,12 @@ package au.org.ala.bhl.messages;
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.IndexingController;
 
+/**
+ * Message used to trigger a retrieval of an item from BHL to the doc cache 
+ * 
+ * @author baird
+ *
+ */
 public class RetrieveItemText extends AbstractItemMessage {
 
     private final ItemDescriptor _item;

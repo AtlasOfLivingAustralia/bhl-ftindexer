@@ -25,6 +25,14 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Utility class that converts verbatim OCR XML file into seperate pages of OCR text.
+ * 
+ * It parses the XML using an XMLStreamReader, so overheads are kept to a minimum.
+ * 
+ * @author baird
+ *
+ */
 public class DocumentPaginator {
     
     public void paginateText(String text, PageHandler handler) {

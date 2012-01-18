@@ -32,6 +32,12 @@ import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.Timer;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Service class representing the document cache 
+ * 
+ * @author baird
+ *
+ */
 public class DocumentCacheService extends AbstractService {
 
 	private String _cacheDir;
@@ -39,31 +45,61 @@ public class DocumentCacheService extends AbstractService {
 	private ObjectMapper _objectMapper;
 	private static String SEPARATOR = System.getProperty("file.separator");
 
+	/**
+	 * CTOR
+	 * @param cacheDir
+	 */
 	public DocumentCacheService(String cacheDir) {
 		_cacheDir = cacheDir;
 		_objectMapper = new ObjectMapper();
 	}
 
+	/** 
+	 * Tests to see if an item exists already in the cache
+	 * 
+	 * @param item
+	 * @return
+	 */
 	public boolean isItemInCache(ItemTO item) {
 		String path = getItemDirectoryPath(item);
 		File f = new File(path);
 		return f.exists();
 	}
 
+	/**
+	 * return the base path for the document cache
+	 * @return
+	 */
 	public String getDocumentCachePath() {
 		return _cacheDir;
 	}
 
+	/**
+	 * returns the path for a specific item identified by its Internet Archive ID
+	 * 
+	 * @param iaId
+	 * @return
+	 */
 	public String getItemDirectoryPath(String iaId) {
 		String subdir = iaId.substring(0,1).toLowerCase();
 		return String.format("%s%s%s%s%s", _cacheDir, SEPARATOR, subdir, SEPARATOR, iaId);
 	}
 
+	/**
+	 * returns the path for a specific item
+	 * @param item
+	 * @return
+	 */
 	public String getItemDirectoryPath(ItemTO item) {
 		String subdir = item.getInternetArchiveId().substring(0,1).toLowerCase();
 		return String.format("%s%s%s%s%s", _cacheDir, SEPARATOR, subdir, SEPARATOR, item.getInternetArchiveId());
 	}
 
+	/**
+	 * Visits each item in the cache
+	 * 
+	 * @param handler
+	 */
 	public void forEachItem(final CachedItemHandler handler) {
 		if (handler == null) {
 			return;
@@ -88,6 +124,10 @@ public class DocumentCacheService extends AbstractService {
 		}
 	}
 
+	/**
+	 * Visits each page for each item in the cache
+	 * @param handler
+	 */
 	public void forEachItemPage(final CachedItemPageHandler handler) {
 
 		if (handler == null) {
@@ -164,6 +204,12 @@ public class DocumentCacheService extends AbstractService {
 		
 	}
 	
+	/**
+	 * Retrieves the text for an item from the BHL and stores it in the cache
+	 * 
+	 * @param item
+	 * @param forceOverwrite
+	 */
 	public void retrieveItem(ItemDescriptor item, boolean forceOverwrite) {
         final String iaId = item.getInternetArchiveId();
         String itemDir = getItemDirectoryPath(iaId);
@@ -207,6 +253,15 @@ public class DocumentCacheService extends AbstractService {
 		
 	}
 	
+	/**
+	 * Downloads and stores pages of text for an item
+	 * 
+	 * @param root
+	 * @param item
+	 * @param itemDir
+	 * @return
+	 * @throws IOException
+	 */
     private boolean downloadItemPages(JsonNode root, ItemDescriptor item, String itemDir) throws IOException {
         JsonNode pagesNode = root.path("Result").path("Pages");
         if (pagesNode != null && pagesNode.isArray()) {
@@ -241,6 +296,11 @@ public class DocumentCacheService extends AbstractService {
     }
 	
 	
+    /**
+     * Downloads an items meta data from BHL
+     * @param item
+     * @return
+     */
 	public JsonNode getItemMetaData(ItemDescriptor item) {
 		try {
 			String itemPath = getItemDirectoryPath(item.getInternetArchiveId());

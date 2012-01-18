@@ -16,6 +16,12 @@ package au.org.ala.bhl;
 
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Handler interface for ItemTO instances
+ * 
+ * @author baird
+ *
+ */
 public interface ItemTOHandler {
     void onItem(ItemTO item);
 }

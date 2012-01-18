@@ -14,6 +14,14 @@
  ******************************************************************************/
 package au.org.ala.bhl;
 
+/**
+ * Utility class that holds two related items denoted First and Second respectively
+ * 
+ * @author baird
+ *
+ * @param <T>
+ * @param <K>
+ */
 public class Pair<T, K> {
 
 	private T _first;

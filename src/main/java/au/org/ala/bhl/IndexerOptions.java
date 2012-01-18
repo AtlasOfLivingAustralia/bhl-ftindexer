@@ -16,6 +16,14 @@ package au.org.ala.bhl;
 
 import org.apache.commons.cli.CommandLine;
 
+/**
+ * Transfer object holding the current state of the programs options.
+ * 
+ * Options are read from the command line upon construction
+ * 
+ * @author baird
+ *
+ */
 public class IndexerOptions {
     
     private boolean _indexDocCacheOnly;
@@ -73,27 +81,11 @@ public class IndexerOptions {
     public void setSolrServerURL(String url) {
         _solrServerUrl = url;
     }
-    
-//    public int getRetrieveThreadCount() {
-//        return _retrieveThreads;
-//    }
-//    
-//    public void setRetrieveThreadCount(int count) {
-//        _retrieveThreads = count;
-//    }
-//    
-//    public int getIndexerThreadCount() {
-//        return _indexingThreads;
-//    }
-    
+       
     public int getThreadCount() {
     	return _jobThreads;
     }
-    
-//    public void setIndexerThreadCount(int count) {
-//        _indexingThreads = count;
-//    }
-    
+        
     public String getOutputFile() {
     	return _outputFile;
     }

@@ -20,6 +20,12 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * policy object used to determine if an items text should be retrieved (or re-retrieved).
+ * 
+ * @author baird
+ *
+ */
 public class DefaultRetrievePolicy implements ItemRetrievePolicy {
 
     public boolean shouldRetrieveItem(ItemTO item) {

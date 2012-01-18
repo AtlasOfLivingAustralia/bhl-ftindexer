@@ -18,6 +18,12 @@ import java.sql.Date;
 
 import au.org.ala.bhl.MappingInfo;
 
+/**
+ * Simple transfer object that represents an item in the ItemService database
+ * 
+ * @author baird
+ *
+ */
 public class ItemTO {
 
     private String primaryTitleId;

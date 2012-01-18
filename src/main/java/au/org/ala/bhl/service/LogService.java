@@ -14,8 +14,16 @@
  ******************************************************************************/
 package au.org.ala.bhl.service;
 
+/**
+ * Static service for logging messages. Should be fleshed out to use log4j or some other framework. For the moment 
+ * dumps messages to std out
+ * 
+ * @author baird
+ *
+ */
 public class LogService {
-    
+
+	
     public static void log(Class<?> source, String format, Object ... args) {        
         String message = (args.length == 0 ? format : String.format(format, args));       
         System.out.println(String.format("[%s-%s] %s", source.getSimpleName(), Thread.currentThread().getName(), message));        

@@ -16,6 +16,12 @@ package au.org.ala.bhl;
 
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Filter interface used to discriminate ItemTO instances
+ * 
+ * @author baird
+ *
+ */
 public interface ItemFilter {
 	
 	boolean accept(ItemTO item);

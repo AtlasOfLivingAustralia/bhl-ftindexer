@@ -24,6 +24,13 @@ import au.org.ala.bhl.command.UpdateCacheControlCommand;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.service.LogService;
 
+/**
+ * Entry point to the BHL Full Text Index utility program. The program accepts a command and a number of optional arguments.
+ * Each command is implement as a separate 'command' class, and is registered in the command map (see the static initialiser).
+ * 
+ * @author baird
+ *
+ */
 public class BHLIndexer {
 
 	private static Map<String, CommandLineCommand> _commandMap;

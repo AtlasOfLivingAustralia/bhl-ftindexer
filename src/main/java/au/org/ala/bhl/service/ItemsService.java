@@ -26,26 +26,52 @@ import au.org.ala.bhl.ItemTOHandler;
 import au.org.ala.bhl.ReflectiveMapper;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * Service class the represents the local status database for items held in the BHL
+ * 
+ * @author baird
+ *
+ */
 public class ItemsService extends H2Service {
 
+	/**
+	 * CTOR
+	 */
     public ItemsService() {
-        super("itemsource");
+        super("itemsource"); // root name of the H2 database file(s)
     }
 
+    /**
+     * Inserts or Updates an items details into the database
+     * @param item
+     */
     public void addItem(ItemDescriptor item) {
         update("MERGE INTO Items (PrimaryTitleID, ItemID, IACode, Title, Volume) VALUES (?, ?, ?, ?, ?)", item.getPrimaryTitleId(), item.getItemId(),item.getInternetArchiveId(), item.getTitle(),item.getVolume());
     }
     
+    /**
+     * Updates cache data for a particular item
+     * @param itemId
+     * @param f
+     */
     public void updateCachedFileInfo(String itemId, File f) {
         if (f != null && f.exists()) {
             update("UPDATE ITEMS SET LocalCacheFile = ?, DateModified = ?, Status = ? WHERE ItemID = ?", f.getAbsolutePath(), new Date(f.lastModified()), ItemStatus.FETCHED, itemId);
         }
     }
     
+    /**
+     * Removes all items from the database
+     */
     public void clearAllItems() {
         nonQuery("DELETE FROM Items");
     }
-    
+
+    /**
+     * Iterates over every item in the database, and allows a handler to process each item. items can be filtered by an optional filter
+     * @param handler
+     * @param filter - may be null
+     */
     public void forAllItems(final ItemTOHandler handler, final ItemFilter filter) {
         
         final ReflectiveMapper<ItemTO> mapper = new ReflectiveMapper<ItemTO>();
@@ -63,16 +89,31 @@ public class ItemsService extends H2Service {
         });        
     }
     
+    /**
+     * Update the status field of a particular item
+     * @param itemId
+     * @param status
+     * @param pageCount
+     */
     public void setItemStatus(String itemId, String status, int pageCount) {
         update("UPDATE ITEMS SET Status = ?, DateModified = ?, PageCount = ? WHERE ItemID = ?", status, now(), pageCount, itemId);
     }
 
+    /**
+     * Creates the tables should they not already exist
+     */
     @Override
     protected void init() {
         nonQuery("CREATE TABLE IF NOT EXISTS Items (PrimaryTitleID VARCHAR(50), ItemID VARCHAR(50) PRIMARY KEY, IACode VARCHAR(50), Title VARCHAR(1024), Volume VARCHAR(255), LocalCacheFile VARCHAR(255), PageCount INT DEFAULT 0, Status VARCHAR(50), DateModified DATE)");
         nonQuery("CREATE UNIQUE INDEX IF NOT EXISTS IACodeIndex ON Items (IACode)");
     }
 
+    /**
+     * Update the local file path for a particular item
+     * 
+     * @param itemId
+     * @param filename
+     */
     public void setItemLocalPath(String itemId, String filename) {
         update("UPDATE ITEMS SET LocalCacheFile = ?, DateModified = ? WHERE ItemID = ?", filename, now(), itemId);        
     }

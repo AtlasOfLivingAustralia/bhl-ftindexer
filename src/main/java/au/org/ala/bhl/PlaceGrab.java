@@ -19,6 +19,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Experimental class that attempts to identify place names and localities from free text
+ * 
+ * @author baird
+ *
+ */
 public class PlaceGrab {
 	
 	private static Pattern[] _patterns = new Pattern[] {

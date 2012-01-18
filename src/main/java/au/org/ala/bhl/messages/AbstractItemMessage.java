@@ -18,14 +18,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import au.org.ala.bhl.IndexingController;
 
+/**
+ * Base class for all AKKA messages 
+ */
 public class AbstractItemMessage {
 	
+
 	private static AtomicInteger _lastJobId = new AtomicInteger(0);
-	
+
+	/** A process wide unique integer for each message */
 	private int _jobId = _lastJobId.incrementAndGet();
     
     private IndexingController _controller;
-    
     
     protected AbstractItemMessage(IndexingController controller) {
         _controller = controller;        

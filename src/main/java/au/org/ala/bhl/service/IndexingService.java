@@ -28,6 +28,12 @@ import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
 import au.org.ala.bhl.TaxonGrab;
 
+/**
+ * Service object that facades the process of interacting with the SOLR index
+ * 
+ * @author baird
+ *
+ */
 public class IndexingService extends AbstractService {
 
 	private final String _serverURL;
@@ -36,12 +42,22 @@ public class IndexingService extends AbstractService {
 
 	private static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
 
+	/**
+	 * CTOR
+	 * 
+	 * @param serverUrl
+	 * @param docCache
+	 */
 	public IndexingService(String serverUrl, DocumentCacheService docCache) {
 		_serverURL = serverUrl;		
 		_taxonGrab = new TaxonGrab();
 		_docCache = docCache;
 	}
 
+	/**
+	 * Create a new instance of the Solr server API facade
+	 * @return
+	 */
 	private SolrServer createSolrServer() {
 		try {
 			return new CommonsHttpSolrServer(_serverURL);
@@ -50,6 +66,11 @@ public class IndexingService extends AbstractService {
 		}
 	}
 
+	/**
+	 * Indexes an item that exists in the document cache
+	 * 
+	 * @param item
+	 */
 	public void indexItem(final ItemDescriptor item) {
 
 		String itemPathStr = _docCache.getItemDirectoryPath(item.getInternetArchiveId());
@@ -91,6 +112,14 @@ public class IndexingService extends AbstractService {
 		} 
 	}
 
+	/**
+	 * Send a page of text to SOLR for indexing
+	 * 
+	 * @param item
+	 * @param pageId
+	 * @param pageText
+	 * @param server
+	 */
 	private void indexPage(ItemDescriptor item, String pageId, String pageText, SolrServer server) {
 		if (!StringUtils.isEmpty(pageText)) {
 			SolrInputDocument doc = new SolrInputDocument();

@@ -17,6 +17,12 @@ package au.org.ala.bhl.messages;
 import au.org.ala.bhl.IndexingController;
 import au.org.ala.bhl.ItemDescriptor;
 
+/**
+ * Message used to trigger a cache control update on a particular item
+ * 
+ * @author baird
+ *
+ */
 public class UpdateCacheControl extends AbstractItemMessage {
 
     private final ItemDescriptor _item;

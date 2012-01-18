@@ -14,6 +14,12 @@
  ******************************************************************************/
 package au.org.ala.bhl;
 
+/**
+ * Handler interface for item pages
+ * 
+ * @author baird
+ *
+ */
 public interface PageHandler {
     
     void handlePage(String pageId, String pageText);

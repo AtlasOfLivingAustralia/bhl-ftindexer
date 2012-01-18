@@ -26,6 +26,12 @@ import au.org.ala.bhl.messages.RetrieveItemText;
 import au.org.ala.bhl.messages.UpdateCacheControl;
 import au.org.ala.bhl.service.LogService;
 
+/**
+ * Coordinating facade that simplifies the sending of messages to the AKKA actors
+ * 
+ * @author baird
+ *
+ */
 public class IndexingController {
 
     private ActorRef _jobActorPool;

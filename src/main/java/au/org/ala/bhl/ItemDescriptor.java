@@ -16,8 +16,16 @@ package au.org.ala.bhl;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Transfer Object class that represents a BHL item. This differs, if only slightly, from the ItemTO in that the ItemDescriptor contains only
+ * identifying data, and not status info.
+ * 
+ * @author baird
+ *
+ */
 public class ItemDescriptor {
-    
+   
+	/** This key is required to use the BHL-AU API */
     private final static String BHL_APIKEY = "fc123b64-9980-4891-86fb-bd9f70c1d237";
 
     private String _primaryTitleId;

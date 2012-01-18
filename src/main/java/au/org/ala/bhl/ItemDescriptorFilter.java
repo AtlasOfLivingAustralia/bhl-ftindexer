@@ -14,6 +14,12 @@
  ******************************************************************************/
 package au.org.ala.bhl;
 
+/**
+ * interface use to discriminate ItemDescriptors
+ * 
+ * @author baird
+ *
+ */
 public interface ItemDescriptorFilter {
 	
 	boolean accept(ItemDescriptor item);

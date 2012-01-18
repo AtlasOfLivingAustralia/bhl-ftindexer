@@ -14,6 +14,12 @@
  ******************************************************************************/
 package au.org.ala.bhl;
 
+/**
+ * Transfer Object class holding the results of a language detection attempt
+ * 
+ * @author baird
+ *
+ */
 public class LanguageScore {
 	
 	private String _language;

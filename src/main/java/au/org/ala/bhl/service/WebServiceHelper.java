@@ -28,8 +28,20 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
+/**
+ * Utility class for extracting data from web service (i.e. http GET) calls
+ * @author baird
+ *
+ */
 public class WebServiceHelper {
 	
+	/**
+	 * Performs a GET on the specified URI, and expects that the output is well formed JSON. The output is parsed into a JsonNode for consumption
+	 * 
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
     public static JsonNode getJSON(String uri) throws IOException {               
         HttpClient httpclient = new DefaultHttpClient();
         HttpGet httpget = new HttpGet(uri);
@@ -53,10 +65,20 @@ public class WebServiceHelper {
         return null;
     }
     
+    /**
+     * Log a message
+     */
     private static void log(String format, Object ... args) {
     	LogService.log(WebServiceHelper.class, format, args);
     }
     
+    /**
+     * Performs a GET on the specified URI, and returns the body without any transformation
+     * 
+     * @param uri
+     * @return
+     * @throws IOException
+     */
     public static String getText(String uri) throws IOException {               
         HttpClient httpclient = new DefaultHttpClient();
         HttpGet httpget = new HttpGet(uri);

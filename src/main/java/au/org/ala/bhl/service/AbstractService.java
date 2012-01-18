@@ -14,10 +14,22 @@
  ******************************************************************************/
 package au.org.ala.bhl.service;
 
+/**
+ * Base class for Service objects
+ * 
+ * @author baird
+ *
+ */
 public abstract class AbstractService {
 	
 	private ItemsService _service;
 	
+	/**
+	 * Logs a message via the log service
+	 * 
+	 * @param format
+	 * @param args
+	 */
 	protected void log(String format, Object... args) {
 		LogService.log(this.getClass(), format, args);
 	}

@@ -27,9 +27,15 @@ import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.to.ItemTO;
 
+/**
+ * This command updates the database record for each item depending whether it exists in the document cache. If the item exists, and it has not
+ * already been indexed, its status is set to  Fetched, and its document path is updated. If the item does not exist its status and local path is cleared.
+ * @author baird
+ *
+ */
 @Command(name = "maintain-cache")
 public class MaintainCacheCommand extends AbstractCommand {
-
+	
     public void execute(final ItemsService service, final IndexerOptions options) throws Exception {
         
         final DocumentCacheService docCache = new DocumentCacheService(options.getDocCachePath());

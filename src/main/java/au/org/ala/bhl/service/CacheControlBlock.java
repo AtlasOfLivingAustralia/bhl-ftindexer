@@ -16,6 +16,12 @@ package au.org.ala.bhl.service;
 
 import java.util.Date;
 
+/**
+ * Transfer object that represents key meta data about BHL items
+ * 
+ * @author baird
+ *
+ */
 public class CacheControlBlock {
 	
 	public String ItemID;	

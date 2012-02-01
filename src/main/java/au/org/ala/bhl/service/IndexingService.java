@@ -27,21 +27,20 @@ import org.codehaus.jackson.JsonNode;
 
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
-import au.org.ala.bhl.TaxonGrab;
 
 /**
  * Service object that facades the process of interacting with the SOLR index
  * 
  * @author baird
- *
+ * 
  */
 public class IndexingService extends AbstractService {
 
 	private final String _serverURL;
-	private TaxonGrab _taxonGrab;
 	private DocumentCacheService _docCache;
 
 	private static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
+	private static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^(\\d{4})\\s*[-]\\s*(\\d{4})$");
 
 	/**
 	 * CTOR
@@ -50,13 +49,13 @@ public class IndexingService extends AbstractService {
 	 * @param docCache
 	 */
 	public IndexingService(String serverUrl, DocumentCacheService docCache) {
-		_serverURL = serverUrl;		
-		_taxonGrab = new TaxonGrab();
+		_serverURL = serverUrl;
 		_docCache = docCache;
 	}
 
 	/**
 	 * Create a new instance of the Solr server API facade
+	 * 
 	 * @return
 	 */
 	private SolrServer createSolrServer() {
@@ -75,7 +74,7 @@ public class IndexingService extends AbstractService {
 	public void indexItem(final ItemDescriptor item) {
 
 		String itemPathStr = _docCache.getItemDirectoryPath(item.getInternetArchiveId());
-		
+
 		SolrServer server = createSolrServer();
 
 		log("Indexing pages %s for item %s", itemPathStr, item.getItemId());
@@ -92,7 +91,7 @@ public class IndexingService extends AbstractService {
 						String pageText = FileUtils.readFileToString(pageFile);
 						indexPage(item, pageId, pageText, server);
 						pageCount++;
-						
+
 						if (pageCount % 100 == 0) {
 							server.commit();
 						}
@@ -106,11 +105,10 @@ public class IndexingService extends AbstractService {
 					log("Ignoring empty item (no pages): %s", item.getItemId());
 				}
 			}
-			
-			
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		} 
+		}
 	}
 
 	/**
@@ -131,58 +129,41 @@ public class IndexingService extends AbstractService {
 			doc.addField("itemId", item.getItemId());
 			doc.addField("pageId", pageId, 1.0f);
 			doc.addField("pageUrl", String.format("http://bhl.ala.org.au/pageimage/%s", pageId));
-			
+
 			JsonNode metadata = _docCache.getItemMetaData(item);
-			if (metadata != null) {				
+			if (metadata != null) {
+
 				String year = metadata.get("Year").getTextValue();
 				if (!StringUtils.isEmpty(year)) {
-					doc.addField("year", year);
+
+					if (StringUtils.isNumeric(year)) {
+						doc.addField("startYear", year);
+						doc.addField("endYear", year);
+					} else {
+						Matcher m = YEAR_RANGE_PATTERN.matcher(year);
+						if (m.find()) {
+							doc.addField("startYear", m.group(1));
+							doc.addField("endYear", m.group(2));
+						}
+					}
 				}
-				
+
 				String volume = metadata.get("Volume").getTextValue();
 				if (!StringUtils.isEmpty(volume)) {
 					doc.addField("volume", volume);
 				}
-				
+
 				String contributor = metadata.get("Contributor").getTextValue();
 				if (!StringUtils.isEmpty(contributor)) {
 					doc.addField("contributor", contributor);
 				}
-				
+
 				String source = metadata.get("Source").getTextValue();
 				if (!StringUtils.isEmpty(source)) {
 					doc.addField("source", source);
 				}
 				
 			}
-
-			// String language = "english";
-			//
-			// CacheControlBlock ccb =
-			// _docCache.getCacheControl(item.getInternetArchiveId());
-			// if (ccb != null && !StringUtils.isEmpty(ccb.Language)) {
-			// language = ccb.Language;
-			// }
-			//
-			// LanguageScore score = WordLists.detectLanguage(pageText,
-			// language);
-			// String lang = language;
-			// if (score != null && !
-			// StringUtils.equalsIgnoreCase(score.getName(), language) &&
-			// score.getScore() > .75) {
-			// log("Page %s - %s language detected as %s (scored %g) - This conflicts with meta data language of %s",
-			// item.getItemId(), pageId, score.getName(), score.getScore(),
-			// language);
-			// lang = score.getName();
-			// }
-			//
-			// List<String> names = _taxonGrab.findNames(pageText, lang);
-			// if (names.size() > 0) {
-			// String namesStr = StringUtils.join(names, ",");
-			// doc.addField("taxonNames", namesStr);
-			// log("Names detected in page %s (%s) : %s", pageId,
-			// item.getInternetArchiveId(), namesStr);
-			// }
 
 			try {
 				server.add(doc);

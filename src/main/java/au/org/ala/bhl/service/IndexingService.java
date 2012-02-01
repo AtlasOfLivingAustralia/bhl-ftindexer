@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
+import org.codehaus.jackson.JsonNode;
 
 import au.org.ala.bhl.ItemDescriptor;
 import au.org.ala.bhl.ItemStatus;
@@ -130,6 +131,30 @@ public class IndexingService extends AbstractService {
 			doc.addField("itemId", item.getItemId());
 			doc.addField("pageId", pageId, 1.0f);
 			doc.addField("pageUrl", String.format("http://bhl.ala.org.au/pageimage/%s", pageId));
+			
+			JsonNode metadata = _docCache.getItemMetaData(item);
+			if (metadata != null) {				
+				String year = metadata.get("Year").getTextValue();
+				if (!StringUtils.isEmpty(year)) {
+					doc.addField("year", year);
+				}
+				
+				String volume = metadata.get("Volume").getTextValue();
+				if (!StringUtils.isEmpty(volume)) {
+					doc.addField("volume", volume);
+				}
+				
+				String contributor = metadata.get("Contributor").getTextValue();
+				if (!StringUtils.isEmpty(contributor)) {
+					doc.addField("contributor", contributor);
+				}
+				
+				String source = metadata.get("Source").getTextValue();
+				if (!StringUtils.isEmpty(source)) {
+					doc.addField("source", source);
+				}
+				
+			}
 
 			// String language = "english";
 			//

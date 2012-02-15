@@ -306,14 +306,24 @@ public class DocumentCacheService extends AbstractService {
 	
 	
     /**
-     * Downloads an items meta data from BHL
+     * Gets an items metadata file from the document cache
+     * 
      * @param item
      * @return
      */
 	public JsonNode getItemMetaData(ItemDescriptor item) {
+		String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
+		return getJSONFile(String.format("%s%s.metadata", itemPath, SEPARATOR));		
+	}
+	
+	public JsonNode getTitleMetaData(ItemDescriptor item) {
+		String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
+		return getJSONFile(String.format("%s%s.titlemetadata", itemPath, SEPARATOR));
+	}
+	
+	protected JsonNode getJSONFile(String path) {
 		try {
-			String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
-			File f = new File(String.format("%s%s.metadata", itemPath, SEPARATOR));
+			File f = new File(path);
 			if (f.exists()) {
 				String text = FileUtils.readFileToString(f);
 				JsonNode root = new ObjectMapper().readValue(text, JsonNode.class);				

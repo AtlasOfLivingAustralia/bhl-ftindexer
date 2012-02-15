@@ -15,6 +15,8 @@
 package au.org.ala.bhl.service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +42,9 @@ public class IndexingService extends AbstractService {
 	private DocumentCacheService _docCache;
 
 	private static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
-	private static Pattern YEAR_RANGE_PATTERN = Pattern.compile("^(\\d{4})\\s*[-]\\s*(\\d{4})$");
+	private static Pattern SINGLE_YEAR_PATTERN = Pattern.compile("(\\d{4})");
+	private static Pattern YEAR_RANGE_PATTERN = Pattern.compile("(\\d{4})\\s*[^\\d]\\s*(\\d{4})");
+	private static Pattern ABBREV_RANGE_PATTERN = Pattern.compile("(\\d{4})\\s*[^\\d]\\s*(\\d{2})");
 
 	/**
 	 * CTOR
@@ -132,37 +136,11 @@ public class IndexingService extends AbstractService {
 
 			JsonNode metadata = _docCache.getItemMetaData(item);
 			if (metadata != null) {
-
-				String year = metadata.get("Year").getTextValue();
-				if (!StringUtils.isEmpty(year)) {
-
-					if (StringUtils.isNumeric(year)) {
-						doc.addField("startYear", year);
-						doc.addField("endYear", year);
-					} else {
-						Matcher m = YEAR_RANGE_PATTERN.matcher(year);
-						if (m.find()) {
-							doc.addField("startYear", m.group(1));
-							doc.addField("endYear", m.group(2));
-						}
-					}
+				addItemMetadata(doc, metadata);
+				JsonNode titleData = _docCache.getTitleMetaData(item);
+				if (titleData != null) {
+					addTitleMetadata(doc, titleData);
 				}
-
-				String volume = metadata.get("Volume").getTextValue();
-				if (!StringUtils.isEmpty(volume)) {
-					doc.addField("volume", volume);
-				}
-
-				String contributor = metadata.get("Contributor").getTextValue();
-				if (!StringUtils.isEmpty(contributor)) {
-					doc.addField("contributor", contributor);
-				}
-
-				String source = metadata.get("Source").getTextValue();
-				if (!StringUtils.isEmpty(source)) {
-					doc.addField("source", source);
-				}
-				
 			}
 
 			try {
@@ -171,6 +149,131 @@ public class IndexingService extends AbstractService {
 				throw new RuntimeException(ex);
 			}
 		}
+	}
+
+	private void addItemMetadata(SolrInputDocument doc, JsonNode metadata) {
+		String year = metadata.get("Year").getTextValue();
+		if (!StringUtils.isEmpty(year)) {
+			YearRange range = parseYearRange(year);
+			if (range != null) {
+				doc.addField("startYear", range.startYear);
+				doc.addField("endYear", range.endYear);
+			}
+		}
+
+		addField(metadata, "Volume", "volume", doc);
+		addField(metadata, "Contributor", "contributor", doc);
+		addField(metadata, "Source", "source", doc);
+
+		int titleId = metadata.get("PrimaryTitleID").asInt();
+		doc.addField("titleId", titleId);
+
+	}
+
+	private void addTitleMetadata(SolrInputDocument doc, JsonNode titleData) {
+		// Full title
+		addField(titleData, "FullTitle", "fullTitle", doc);
+		// Publisher Name
+		addField(titleData, "PublisherName", "publisherName", doc);
+		// Publisher Place
+		addField(titleData, "PublisherPlace", "publisherPlace", doc);
+
+		// Author(s)
+		for (String author: selectField(titleData.get("Authors"), "Name")) {
+			doc.addField("author", author);
+		}
+		
+		// Author ID
+		for (String authorId: selectField(titleData.get("Authors"), "CreatorID")) {
+			doc.addField("authorId", authorId);
+		}
+
+		// Subject(s)
+		for (String subject : selectField(titleData.get("Subjects"), "SubjectText")) {
+			doc.addField("subject", subject);
+		}
+
+		// Publication Dates
+		String date = titleData.get("PublicationDate").getTextValue();
+		YearRange range = parseYearRange(date);
+		if (range != null) {
+			doc.addField("publicationStartYear", range.startYear);
+			doc.addField("publicationEndYear", range.startYear);
+		}
+
+	}
+
+	private void addField(JsonNode obj, String jsonfield, String indexField, SolrInputDocument doc) {
+		String value = obj.get(jsonfield).getTextValue();
+		if (!StringUtils.isEmpty(value)) {
+			doc.addField(indexField, value);
+		}
+	}
+
+	private List<String> selectField(JsonNode parent, String textField) {
+		ArrayList<String> results = new ArrayList<String>();
+		if (parent.isArray()) {
+			for (JsonNode child : parent) {
+				String name = child.get(textField).asText();
+				if (name != null) {					
+					if (!StringUtils.isEmpty(name)) {
+						results.add(name);
+					}
+				}
+			}
+		}
+		return results;
+	}
+
+	private YearRange parseYearRange(String range) {
+		
+		if (range == null) {
+			return null;
+		}
+
+		if (StringUtils.isNumeric(range)) {
+			return new YearRange(range, range);
+		}
+
+		// Look for YYYY-YYYY
+		Matcher m = YEAR_RANGE_PATTERN.matcher(range);
+		if (m.find()) {
+			return new YearRange(m.group(1), m.group(2));
+		}
+
+		// Look for YYYY-YY
+		m = ABBREV_RANGE_PATTERN.matcher(range);
+		if (m.find()) {
+			String start = m.group(1);
+			return new YearRange(start, start.substring(0, 2) + m.group(2));
+		}
+
+		// Look for any for 4 consecutive digits!
+		m = SINGLE_YEAR_PATTERN.matcher(range);
+		if (m.find()) {
+			return new YearRange(m.group(1), m.group(1));
+		}
+
+		return null;
+	}
+
+	class YearRange {
+
+		public YearRange() {
+		}
+
+		public YearRange(int start, int end) {
+			startYear = start;
+			endYear = end;
+		}
+
+		public YearRange(String start, String end) {
+			startYear = Integer.parseInt(start);
+			endYear = Integer.parseInt(end);
+		}
+
+		public int startYear;
+		public int endYear;
 	}
 
 }

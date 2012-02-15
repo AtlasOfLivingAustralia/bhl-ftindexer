@@ -40,5 +40,23 @@ public class DateTest {
 		System.out.println(d);
 
 	}
+	
+	@Test
+	public void testCollapseString() {
+		String name = "John,    James";
+		
+		name = name.replaceAll(",", " ");
+		name = name.replaceAll("\\s+", " ");
+		
+		System.err.println(name);
+	}
+	
+	@Test
+	public void testBufTrim() {
+		StringBuilder buf = new StringBuilder("a, b, c, ");
+		buf.delete(buf.length() - 2, buf.length());
+		
+		System.err.println("*" + buf.toString() + "*");
+	}
 
 }

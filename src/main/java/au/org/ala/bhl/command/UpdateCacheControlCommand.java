@@ -46,6 +46,7 @@ public class UpdateCacheControlCommand extends AbstractCommand {
 	}
 
 	public void defineOptions(Options options) {
+		options.addOption("force", false, "Force the operation even if it cache control already exists");
 	}
 
 }

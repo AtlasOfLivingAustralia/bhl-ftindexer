@@ -33,6 +33,7 @@ public class IndexerOptions {
     private String _outputFile;    
     private int _jobThreads;    
     private String _itemFilter;
+    private boolean _force;
     
     public IndexerOptions(CommandLine line) {
         
@@ -47,6 +48,8 @@ public class IndexerOptions {
         _outputFile = line.getOptionValue("o", "out.txt");
         
         _itemFilter = line.getOptionValue("filter", "");
+        
+        _force = line.hasOption("force");
     }
     
     
@@ -100,6 +103,14 @@ public class IndexerOptions {
     
     public void setItemFilter(String regex) {
     	_itemFilter = regex;
+    }
+    
+    public boolean setForce(boolean force) {
+    	return _force;
+    }
+    
+    public boolean getForce() {
+    	return _force;
     }
 
 }

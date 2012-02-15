@@ -78,5 +78,13 @@ public class ItemDescriptor {
     public String getItemMetaDataURL() {
         return String.format("http://bhl.ala.org.au/api/rest?op=GetItemMetadata&itemid=%s&pages=t&apikey=%s&format=json", _itemId, BHL_APIKEY);
     }
+    
+    public String getTitleMetaDataURL(int titleId, boolean retrieveItemData) {
+    	String getItemsFlag = "f";
+    	if (retrieveItemData) {
+    		getItemsFlag = "t";
+    	}
+    	return String.format("http://bhl.ala.org.au/api/rest?op=GetTitleMetadata&titleid=%s&items=%s&apikey=%s&format=json", titleId, getItemsFlag, BHL_APIKEY);
+    }
 
 }

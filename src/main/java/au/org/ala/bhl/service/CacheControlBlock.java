@@ -26,6 +26,7 @@ public class CacheControlBlock {
 	
 	public String ItemID;	
 	public String InternetArchiveID;
+	public String PrimaryTitleID;
 	public String Language;
 	public String ItemURL;	
 	public Date TimeComplete;

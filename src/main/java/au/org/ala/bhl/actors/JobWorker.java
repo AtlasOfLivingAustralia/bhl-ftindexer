@@ -98,7 +98,7 @@ public class JobWorker extends AbstractBHLActor {
 	 */
 	private void updateCacheControl(UpdateCacheControl msg) {
 		ItemDescriptor item = msg.getItem();
-		_docCache.createCacheControl(item);
+		_docCache.createCacheControl(item, _options.getForce());
 	}
 
 }

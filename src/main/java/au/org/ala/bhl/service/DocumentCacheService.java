@@ -140,7 +140,7 @@ public class DocumentCacheService extends AbstractService {
 		t.stop(true, false, String.format("%d pages traversed.", adapter.getPageCount()));
 	}
 
-	public void createCacheControl(ItemDescriptor item) {
+	public void createCacheControl(ItemDescriptor item, boolean force) {
 
 		try {
 			String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
@@ -162,8 +162,6 @@ public class DocumentCacheService extends AbstractService {
 				}
 			}
 
-			boolean force = false;
-
 			if (!ccbfile.exists() || force) {
 
 				if (ccbfile.exists()) {
@@ -177,9 +175,20 @@ public class DocumentCacheService extends AbstractService {
 					if (result != null && !(result instanceof NullNode)) {
 						ccb.Language = result.get("Language").getTextValue();
 						ccb.ItemURL = result.get("ItemUrl").getTextValue();
+						
+						int titleId = result.get("PrimaryTitleID").getIntValue();
+						
+						ccb.PrimaryTitleID = "" + titleId;
+						
+						JsonNode titleRoot = WebServiceHelper.getJSON(item.getTitleMetaDataURL(titleId, false));
+						JsonNode titleResult = titleRoot.get("Result");
+						
+						
 						log("Writing cache control for item %s (%s)", item.getItemId(), item.getInternetArchiveId());
 						_objectMapper.writeValue(ccbfile, ccb);
 						_objectMapper.writeValue(new File(String.format("%s%s.metadata", itemPath, SEPARATOR)), result);
+						_objectMapper.writeValue(new File(String.format("%s%s.titlemetadata", itemPath, SEPARATOR)), titleResult);
+						
 						ok = true;
 					}
 				}
@@ -240,7 +249,7 @@ public class DocumentCacheService extends AbstractService {
                 downloadItemPages(node, item, itemDir);
 
                 getItemsService().setItemStatus(item.getItemId(), ItemStatus.FETCHED, 0);
-                createCacheControl(item);
+                createCacheControl(item, true);
             } else {
                 log("Failed to get item meta data from BHL-AU for item %s", item.getItemId());
             }

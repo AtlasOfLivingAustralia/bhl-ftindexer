@@ -34,6 +34,7 @@ public class IndexerOptions {
     private int _jobThreads;    
     private String _itemFilter;
     private boolean _force;
+    private boolean _clear;
     
     public IndexerOptions(CommandLine line) {
         
@@ -50,6 +51,8 @@ public class IndexerOptions {
         _itemFilter = line.getOptionValue("filter", "");
         
         _force = line.hasOption("force");
+        
+        _clear = line.hasOption("clear");
     }
     
     
@@ -111,6 +114,14 @@ public class IndexerOptions {
     
     public boolean getForce() {
     	return _force;
+    }
+    
+    public boolean getClear() {
+    	return _clear;
+    }
+    
+    public void setClear(boolean val) {
+    	_clear = val;
     }
 
 }

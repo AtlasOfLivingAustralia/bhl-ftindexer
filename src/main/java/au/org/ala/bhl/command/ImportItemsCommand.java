@@ -49,7 +49,10 @@ public class ImportItemsCommand extends AbstractCommand {
             throw new RuntimeException("No value for source file argument!");            
         }
         
-        service.clearAllItems();        
+        if (options.getClear()) {        
+        	service.clearAllItems();
+        }
+        
         final DocumentCacheService docCache = new DocumentCacheService(options.getDocCachePath());
         
         ItemImporter importer = new ItemImporter(service, docCache);
@@ -111,6 +114,7 @@ public class ImportItemsCommand extends AbstractCommand {
     public void defineOptions(Options options) {
         options.addOption("sourcefile", true, "Input file for seeding items store (import-items)");
         options.addOption("filter", true, "regex for filtering Internet Archive Ids");
+        options.addOption("clear", false, "Clear the items database before importing");
     }
     
     class ItemImporter implements ItemsFileHandler {

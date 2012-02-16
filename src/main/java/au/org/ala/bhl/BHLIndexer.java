@@ -17,6 +17,7 @@ import au.org.ala.bhl.command.ExtractPlacesCommand;
 import au.org.ala.bhl.command.ImportItemsCommand;
 import au.org.ala.bhl.command.IndexItemsCommand;
 import au.org.ala.bhl.command.MaintainCacheCommand;
+import au.org.ala.bhl.command.ProcessItemsCommand;
 import au.org.ala.bhl.command.ResetStatusCommand;
 import au.org.ala.bhl.command.RetrieveItemsCommand;
 import au.org.ala.bhl.command.StatisticsCommand;
@@ -48,6 +49,7 @@ public class BHLIndexer {
 		registerCommand(UpdateCacheControlCommand.class);
 		registerCommand(CacheStatsCommand.class);
 		registerCommand(ResetStatusCommand.class);
+		registerCommand(ProcessItemsCommand.class);
 	}
 
 	private static void registerCommand(Class<? extends CommandLineCommand> clazz) {

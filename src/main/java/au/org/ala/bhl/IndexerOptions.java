@@ -35,6 +35,7 @@ public class IndexerOptions {
     private String _itemFilter;
     private boolean _force;
     private boolean _clear;
+    private String _script;
     
     public IndexerOptions(CommandLine line) {
         
@@ -53,6 +54,9 @@ public class IndexerOptions {
         _force = line.hasOption("force");
         
         _clear = line.hasOption("clear");
+        
+        _script = line.getOptionValue("script", "");
+        
     }
     
     
@@ -122,6 +126,10 @@ public class IndexerOptions {
     
     public void setClear(boolean val) {
     	_clear = val;
+    }
+    
+    public String getScript() {
+    	return _script;
     }
 
 }

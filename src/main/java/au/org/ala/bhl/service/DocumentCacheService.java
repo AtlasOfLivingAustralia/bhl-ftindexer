@@ -108,7 +108,7 @@ public class DocumentCacheService extends AbstractService {
 		File topLevel = new File(_cacheDir);
 
 		if (topLevel.exists() && topLevel.isDirectory()) {
-			int itemCount = topLevel.list().length;
+			int itemCount = countItems(topLevel);
 			log("Traversing item cache (%d partitions)...", itemCount);
 			FileItemAdaptor h = new FileItemAdaptor(handler, itemCount);
 			Timer t = new Timer("Traversing items in cache");
@@ -122,6 +122,17 @@ public class DocumentCacheService extends AbstractService {
 			}
 			t.stop(true, false, String.format("%d items traversed.", h.getCount()));
 		}
+	}
+
+	private int countItems(File topLevel) {
+		int total = 0;
+		File[] files = topLevel.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				total += file.listFiles().length;
+			}
+		}
+		return total;
 	}
 
 	/**
@@ -316,8 +327,18 @@ public class DocumentCacheService extends AbstractService {
 		return getJSONFile(String.format("%s%s.metadata", itemPath, SEPARATOR));		
 	}
 	
+	public JsonNode getItemMetaData(String iaId) {
+		String itemPath = getItemDirectoryPath(iaId);
+		return getJSONFile(String.format("%s%s.metadata", itemPath, SEPARATOR));		
+	}
+	
 	public JsonNode getTitleMetaData(ItemDescriptor item) {
 		String itemPath = getItemDirectoryPath(item.getInternetArchiveId());
+		return getJSONFile(String.format("%s%s.titlemetadata", itemPath, SEPARATOR));
+	}
+	
+	public JsonNode getTitleMetaData(String iaId) {
+		String itemPath = getItemDirectoryPath(iaId);
 		return getJSONFile(String.format("%s%s.titlemetadata", itemPath, SEPARATOR));
 	}
 	

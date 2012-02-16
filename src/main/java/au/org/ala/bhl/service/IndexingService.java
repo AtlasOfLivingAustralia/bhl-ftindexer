@@ -225,9 +225,9 @@ public class IndexingService extends AbstractService {
 		return results;
 	}
 
-	private YearRange parseYearRange(String range) {
+	public static YearRange parseYearRange(String range) {
 		
-		if (range == null) {
+		if (StringUtils.isEmpty(range)) {
 			return null;
 		}
 
@@ -257,7 +257,7 @@ public class IndexingService extends AbstractService {
 		return null;
 	}
 
-	class YearRange {
+	public static class YearRange {
 
 		public YearRange() {
 		}

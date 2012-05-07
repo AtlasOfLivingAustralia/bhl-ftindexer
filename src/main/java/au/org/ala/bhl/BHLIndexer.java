@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.bhl.command.CacheStatsCommand;
 import au.org.ala.bhl.command.CommandLineCommand;
+import au.org.ala.bhl.command.CompressPagesCommand;
 import au.org.ala.bhl.command.ExtractNamesCommand;
 import au.org.ala.bhl.command.ExtractPlacesCommand;
 import au.org.ala.bhl.command.ImportItemsCommand;
@@ -50,6 +51,7 @@ public class BHLIndexer {
 		registerCommand(CacheStatsCommand.class);
 		registerCommand(ResetStatusCommand.class);
 		registerCommand(ProcessItemsCommand.class);
+		registerCommand(CompressPagesCommand.class);
 	}
 
 	private static void registerCommand(Class<? extends CommandLineCommand> clazz) {

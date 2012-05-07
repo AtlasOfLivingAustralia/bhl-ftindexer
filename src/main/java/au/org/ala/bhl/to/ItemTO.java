@@ -116,5 +116,10 @@ public class ItemTO {
     public void setPageCount(int pageCount) {
         this.pageCount = pageCount;
     }
+    
+    @Override
+    public String toString() {
+    	return String.format("%s - %s", getInternetArchiveId(), getItemId());
+    }
 
 }

@@ -16,10 +16,15 @@ package au.org.ala.bhl.service;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -150,6 +155,11 @@ public class DocumentCacheService extends AbstractService {
 		forEachItem(adapter);
 		t.stop(true, false, String.format("%d pages traversed.", adapter.getPageCount()));
 	}
+	
+	public void forEachItemPage(ItemDescriptor item, CachedItemPageHandler handler) {
+		ItemPageHandlerAdapter adapter = new ItemPageHandlerAdapter(handler);
+		adapter.onItem(new File(getItemDirectoryPath(item.getInternetArchiveId())));
+	}
 
 	public void createCacheControl(ItemDescriptor item, boolean force) {
 
@@ -222,6 +232,22 @@ public class DocumentCacheService extends AbstractService {
 			throw new RuntimeException(ex);
 		}
 		
+	}
+	
+	public boolean isItemComplete(ItemDescriptor item) {
+        final String iaId = item.getInternetArchiveId();
+        String itemDir = getItemDirectoryPath(iaId);
+        //String completeFilePath = String.format("%s%s.complete", itemDir, SEPARATOR);
+        //File completeFile = new File(completeFilePath);
+        CacheControlBlock ccb = getCacheControl(item.getInternetArchiveId());
+        
+        File documentDir = new File(itemDir);
+                
+        if (ccb != null && documentDir.exists()) {
+        	return true;
+        }
+        
+        return false;		
 	}
 	
 	/**
@@ -427,9 +453,15 @@ public class DocumentCacheService extends AbstractService {
 			return false;
 		}
 	}
+	
+	public boolean pageArchiveExists(ItemDescriptor item) {
+		String path = String.format("%s%spages.zip", getItemDirectoryPath(item.getInternetArchiveId()), SEPARATOR);
+		File file = new File(path);
+		return file.exists();
+	}
 
 	public CacheControlBlock getCacheControl(String internetArchiveId) {
-		String ccbpath = String.format("%s%s%s%s.cachecontrol", _cacheDir, SEPARATOR, internetArchiveId, SEPARATOR);
+		String ccbpath = String.format("%s%s.cachecontrol", getItemDirectoryPath(internetArchiveId), SEPARATOR);
 		File ccbfile = new File(ccbpath);
 		if (ccbfile.exists()) {
 			try {
@@ -440,6 +472,53 @@ public class DocumentCacheService extends AbstractService {
 		}
 
 		return null;
+	}
+
+	public void compressPages(ItemDescriptor itemDesc) {
+		File itemDir = new File(getItemDirectoryPath(itemDesc.getInternetArchiveId()));
+		File file = new File(String.format("%s%spages.zip", getItemDirectoryPath(itemDesc.getInternetArchiveId()), SEPARATOR));
+		if (file.exists()) {
+			log("Deleting existing archive file: %s", file.getAbsolutePath());
+			file.delete();
+		}
+		try {
+			File[] candidates = itemDir.listFiles();
+			int pageCount = 0;
+			
+			ZipOutputStream out = null;
+			
+			for (File candidate : candidates) {
+				Matcher m = PAGE_FILE_REGEX.matcher(candidate.getName());
+				if (m.matches()) {
+					if (out == null) {
+						out = new ZipOutputStream(new FileOutputStream(file));
+					}
+					String pageId = m.group(2);
+					pageCount++;
+					FileInputStream in = new FileInputStream(candidate);
+					out.putNextEntry(new ZipEntry(candidate.getName()));
+					byte[] buf = new byte[2048];
+					int len;
+			        while ((len = in.read(buf)) > 0) {
+			            out.write(buf, 0, len);
+			        }
+			        out.closeEntry();
+			        in.close();	
+			        
+			        candidate.delete();
+				}
+			}			
+			
+			if (out != null) {
+				out.close();
+				log("%d pages add to pages.zip for item %s", pageCount, itemDesc);
+			} else {
+				log("No pages for item %s", itemDesc);
+			}
+			
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

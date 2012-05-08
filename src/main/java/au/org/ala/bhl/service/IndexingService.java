@@ -17,10 +17,10 @@ package au.org.ala.bhl.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
@@ -41,7 +41,6 @@ public class IndexingService extends AbstractService {
 	private final String _serverURL;
 	private DocumentCacheService _docCache;
 
-	private static Pattern PAGE_FILE_REGEX = Pattern.compile("^(\\d{5})_(\\d+).txt$");
 	private static Pattern SINGLE_YEAR_PATTERN = Pattern.compile("(\\d{4})");
 	private static Pattern YEAR_RANGE_PATTERN = Pattern.compile("(\\d{4})\\s*[^\\d]\\s*(\\d{4})");
 	private static Pattern ABBREV_RANGE_PATTERN = Pattern.compile("(\\d{4})\\s*[^\\d]\\s*(\\d{2})");
@@ -79,34 +78,45 @@ public class IndexingService extends AbstractService {
 
 		String itemPathStr = _docCache.getItemDirectoryPath(item.getInternetArchiveId());
 
-		SolrServer server = createSolrServer();
+		final SolrServer server = createSolrServer();
 
 		log("Indexing pages %s for item %s", itemPathStr, item.getItemId());
 
 		try {
+			final AtomicInteger pageCount = new AtomicInteger(0);
 			File itemPath = new File(itemPathStr);
 			if (itemPath.exists() && itemPath.isDirectory()) {
-				File[] pageFiles = itemPath.listFiles();
-				int pageCount = 0;
-				for (File pageFile : pageFiles) {
-					Matcher m = PAGE_FILE_REGEX.matcher(pageFile.getName());
-					if (m.matches()) {
-						String pageId = m.group(2);
-						String pageText = FileUtils.readFileToString(pageFile);
-						indexPage(item, pageId, pageText, server);
-						pageCount++;
+				File f = _docCache.getPageArchiveFile(item);
+				if (f.exists()) {
+					_docCache.forEachItemPage(item, new CachedItemPageHandler() {
 
-						if (pageCount % 100 == 0) {
-							server.commit();
+						public void startItem(String itemId) {
 						}
+
+						public void onPage(String iaId, String pageId, String text) {
+							indexPage(item, pageId, text, server);
+							pageCount.incrementAndGet();
+
+							if (pageCount.get() % 100 == 0) {
+								try {
+									server.commit();
+								} catch (Exception ex) {
+									throw new RuntimeException(ex);
+								}
+							}
+						}
+
+						public void endItem(String itemId) {
+						}
+					});
+
+					if (pageCount.get() > 0) {
+						server.commit();
+						getItemsService().setItemStatus(item.getItemId(), ItemStatus.INDEXED, pageCount.get());
+						log("%d pages indexed for item: %s", pageCount, item.getItemId());
+					} else {
+						log("Ignoring empty item (no pages): %s", item.getItemId());
 					}
-				}
-				if (pageCount > 0) {
-					server.commit();
-					getItemsService().setItemStatus(item.getItemId(), ItemStatus.INDEXED, pageCount);
-					log("%d pages indexed for item: %s", pageCount, item.getItemId());
-				} else {
-					log("Ignoring empty item (no pages): %s", item.getItemId());
 				}
 			}
 
@@ -179,12 +189,12 @@ public class IndexingService extends AbstractService {
 		addField(titleData, "PublisherPlace", "publisherPlace", doc);
 
 		// Author(s)
-		for (String author: selectField(titleData.get("Authors"), "Name")) {
+		for (String author : selectField(titleData.get("Authors"), "Name")) {
 			doc.addField("author", author);
 		}
-		
+
 		// Author ID
-		for (String authorId: selectField(titleData.get("Authors"), "CreatorID")) {
+		for (String authorId : selectField(titleData.get("Authors"), "CreatorID")) {
 			doc.addField("authorId", authorId);
 		}
 
@@ -215,7 +225,7 @@ public class IndexingService extends AbstractService {
 		if (parent.isArray()) {
 			for (JsonNode child : parent) {
 				String name = child.get(textField).asText();
-				if (name != null) {					
+				if (name != null) {
 					if (!StringUtils.isEmpty(name)) {
 						results.add(name);
 					}
@@ -226,7 +236,7 @@ public class IndexingService extends AbstractService {
 	}
 
 	public static YearRange parseYearRange(String range) {
-		
+
 		if (StringUtils.isEmpty(range)) {
 			return null;
 		}

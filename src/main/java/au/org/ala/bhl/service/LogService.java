@@ -14,6 +14,9 @@
  ******************************************************************************/
 package au.org.ala.bhl.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Static service for logging messages. Should be fleshed out to use log4j or some other framework. For the moment 
  * dumps messages to std out
@@ -22,11 +25,12 @@ package au.org.ala.bhl.service;
  *
  */
 public class LogService {
-
 	
-    public static void log(Class<?> source, String format, Object ... args) {        
+    public static void log(Class<?> source, String format, Object ... args) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         String message = (args.length == 0 ? format : String.format(format, args));       
-        System.out.println(String.format("[%s-%s] %s", source.getSimpleName(), Thread.currentThread().getName(), message));        
+        System.out.println(String.format("[%s] <%s-%s> %s", sdf.format(new Date()), source.getSimpleName(), Thread.currentThread().getName(), message));        
     }
 
 }

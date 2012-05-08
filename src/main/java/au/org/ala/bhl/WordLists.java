@@ -59,7 +59,7 @@ public class WordLists {
 	);	
 
 	public static void loadWordLists() {		
-		loadLists("english", "german", "dutch", "french", "danish");	
+		// loadLists("english", "german", "dutch", "french", "danish");	
 	}
 	
 	private static void loadLists(String...languages) {

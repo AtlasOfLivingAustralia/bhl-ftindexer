@@ -21,7 +21,6 @@ import java.io.Writer;
 import java.util.List;
 
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.bhl.Command;
@@ -60,10 +59,9 @@ public class ExtractNamesCommand extends AbstractCommand {
 			private String _language = "";
 			
 			
-			public void onPage(String internetArchiveId, String pageId, File pageFile) {
+			public void onPage(String internetArchiveId, String pageId, String text) {
 
-				try {
-					String text = FileUtils.readFileToString(pageFile);
+				try {					
 					LanguageScore score = WordLists.detectLanguage(text, _language);
 					String lang = _language;					
 					if (score != null &&  ! StringUtils.equalsIgnoreCase(score.getName(), _language) && score.getScore() > .75) {
@@ -76,7 +74,7 @@ public class ExtractNamesCommand extends AbstractCommand {
 					
 					List<String> names = nameGrabber.findNames(text, lang);
 					for (String name : names) {
-						String line = String.format("%s,%s,\"%s\",\"%s\"\n", internetArchiveId, pageId, name, pageFile.getName());
+						String line = String.format("%s,%s,\"%s\"\n", internetArchiveId, pageId, name);
 						writer.write(line);
 					}
 				} catch (IOException ioex) {

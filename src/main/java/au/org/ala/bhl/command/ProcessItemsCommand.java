@@ -7,7 +7,6 @@ import groovy.lang.GroovyShell;
 import java.io.File;
 
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import au.org.ala.bhl.Command;
@@ -51,9 +50,9 @@ public class ProcessItemsCommand extends AbstractCommand {
 				}
 			}
 
-			public void onPage(String iaId, String pageId, File pageFile) {
+			public void onPage(String iaId, String pageId, String text) {
 				if (onPage != null) {
-					onPage.call(iaId, pageId, pageFile);
+					onPage.call(iaId, pageId, text);
 				}
 			}
 

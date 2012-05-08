@@ -86,5 +86,9 @@ public class ItemDescriptor {
     	}
     	return String.format("http://bhl.ala.org.au/api/rest?op=GetTitleMetadata&titleid=%s&items=%s&apikey=%s&format=json", titleId, getItemsFlag, BHL_APIKEY);
     }
-
+    
+    @Override
+    public String toString() {
+    	return String.format("%s - %s", getInternetArchiveId(), getItemId());
+    }
 }

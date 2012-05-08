@@ -14,7 +14,6 @@
  ******************************************************************************/
 package au.org.ala.bhl.service;
 
-import java.io.File;
 
 /**
  * Interface for visitor to each page for each item in the doc page
@@ -26,7 +25,7 @@ public interface CachedItemPageHandler {
 	
 	void startItem(String itemId);
 	
-	void onPage(String iaId, String pageId, File pageFile);
+	void onPage(String iaId, String pageId, String text);
 	
 	void endItem(String itemId);
 

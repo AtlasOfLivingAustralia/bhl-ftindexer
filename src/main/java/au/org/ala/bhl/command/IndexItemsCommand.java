@@ -53,7 +53,7 @@ public class IndexItemsCommand extends AbstractCommand {
             public void onItem(ItemTO item) {
 
                 if (indexerOptions.getIndexDocCacheOnly()) {
-                    if (!StringUtils.isEmpty(item.getLocalCacheFile())) {
+                    if (!StringUtils.isEmpty(item.getLocalCacheFile()) && !item.getStatus().equals(ItemStatus.INDEXED)) {
                         _indexer.indexItem(createItemDescriptor(item), item.getLocalCacheFile());
                     }
                 } else {
@@ -73,7 +73,7 @@ public class IndexItemsCommand extends AbstractCommand {
     }
 
     public void defineOptions(Options options) {
-        options.addOption("indexlocalonly", true, "Index the documents already in the local document cache only");
+        options.addOption("indexlocalonly", false, "Index the documents already in the local document cache only");
         options.addOption("solrserver", true, "URL for the SOLR instance (index-items)");
         options.addOption("solrlocalpath", true, "Absolute file path to a local SOLR database (will use an embedded SOLR instance) - make -solrserver option redundant");
         options.addOption("threads", true, "The number of concurrent threads to use");

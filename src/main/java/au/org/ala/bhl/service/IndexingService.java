@@ -150,6 +150,8 @@ public class IndexingService extends AbstractService {
 					} else {
 						log("Ignoring empty item (no pages): %s", item.getItemId());
 					}
+				} else {
+					log("Ignoring partial or empty item (no archive file found): %s", item.getInternetArchiveId());
 				}
 			}
 

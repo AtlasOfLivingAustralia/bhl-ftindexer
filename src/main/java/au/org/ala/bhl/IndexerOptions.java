@@ -39,7 +39,7 @@ public class IndexerOptions {
     
     public IndexerOptions(CommandLine line) {
         
-        _indexDocCacheOnly = Boolean.parseBoolean(line.getOptionValue("indexlocalonly", "false"));
+        _indexDocCacheOnly = line.hasOption("indexlocalonly");
         
         _sourceFilename = line.getOptionValue("sourcefile", "");
         

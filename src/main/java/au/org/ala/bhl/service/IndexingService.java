@@ -23,8 +23,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.core.CoreContainer;
 import org.codehaus.jackson.JsonNode;
 
 import au.org.ala.bhl.ItemDescriptor;
@@ -39,7 +41,10 @@ import au.org.ala.bhl.ItemStatus;
 public class IndexingService extends AbstractService {
 
 	private final String _serverURL;
-	private DocumentCacheService _docCache;
+	private DocumentCacheService _docCache;	
+	private SolrServer _solrServer;
+	private CoreContainer _coreContainer;
+	private byte[] _serverLock = new byte[]{};
 
 	private static Pattern SINGLE_YEAR_PATTERN = Pattern.compile("(\\d{4})");
 	private static Pattern YEAR_RANGE_PATTERN = Pattern.compile("(\\d{4})\\s*[^\\d]\\s*(\\d{4})");
@@ -55,6 +60,16 @@ public class IndexingService extends AbstractService {
 		_serverURL = serverUrl;
 		_docCache = docCache;
 	}
+	
+	public void shutdown() {
+		log("Shutting down indexing service...");		
+		synchronized (_serverLock) {
+			if (_coreContainer != null) {
+				_solrServer = null;
+				_coreContainer.shutdown();				
+			}
+		}
+	}
 
 	/**
 	 * Create a new instance of the Solr server API facade
@@ -63,7 +78,25 @@ public class IndexingService extends AbstractService {
 	 */
 	private SolrServer createSolrServer() {
 		try {
-			return new CommonsHttpSolrServer(_serverURL);
+			synchronized (_serverLock) {
+				if (_solrServer == null) {
+					if (!StringUtils.isEmpty(_serverURL)) {
+						if (_serverURL.startsWith("http://")) {
+							_solrServer = new CommonsHttpSolrServer(_serverURL);	
+						} else {
+						  // Note that the following property could be set through JVM level arguments too
+						  System.setProperty("solr.solr.home", _serverURL);
+						  CoreContainer.Initializer initializer = new CoreContainer.Initializer();
+						  _coreContainer = initializer.initialize();
+						  _solrServer = new EmbeddedSolrServer(_coreContainer, "");							
+						}
+					} else {
+						throw new RuntimeException("Neither a local SOLR path or a SOLR HTTP Url was specified!");
+					}			  				
+				}			
+			}
+			
+			return _solrServer;			
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
@@ -113,7 +146,7 @@ public class IndexingService extends AbstractService {
 					if (pageCount.get() > 0) {
 						server.commit();
 						getItemsService().setItemStatus(item.getItemId(), ItemStatus.INDEXED, pageCount.get());
-						log("%d pages indexed for item: %s", pageCount, item.getItemId());
+						log("%s pages indexed for item: %s", pageCount, item.getItemId());
 					} else {
 						log("Ignoring empty item (no pages): %s", item.getItemId());
 					}

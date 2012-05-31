@@ -61,7 +61,8 @@ public class IndexingController {
     }
 
     public void queueStopMessages() {
-    	log("Adding stop messages to queue...");    	       
+    	log("Adding stop messages to queue...");
+    	_jobActorPool.tell(new au.org.ala.bhl.messages.Shutdown());
         _jobActorPool.tell(new Routing.Broadcast(Actors.poisonPill()));
         _jobActorPool.tell(Actors.poisonPill());
     }

@@ -112,7 +112,7 @@ public class ImportItemsCommand extends AbstractCommand {
     }
 
     public void defineOptions(Options options) {
-        options.addOption("sourcefile", true, "Input file for seeding items store (import-items)");
+        options.addOption("sourcefile", true, "Input file for seeding items store (import-items, update-item-status)");
         options.addOption("filter", true, "regex for filtering Internet Archive Ids");
         options.addOption("clear", false, "Clear the items database before importing");
     }

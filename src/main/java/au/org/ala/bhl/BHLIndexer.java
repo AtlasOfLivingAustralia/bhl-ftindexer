@@ -9,6 +9,8 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.org.ala.bhl.command.CacheStatsCommand;
 import au.org.ala.bhl.command.CommandLineCommand;
@@ -23,6 +25,7 @@ import au.org.ala.bhl.command.ResetStatusCommand;
 import au.org.ala.bhl.command.RetrieveItemsCommand;
 import au.org.ala.bhl.command.StatisticsCommand;
 import au.org.ala.bhl.command.UpdateCacheControlCommand;
+import au.org.ala.bhl.command.UpdateItemStatus;
 import au.org.ala.bhl.service.ItemsService;
 import au.org.ala.bhl.service.LogService;
 
@@ -52,6 +55,7 @@ public class BHLIndexer {
 		registerCommand(ResetStatusCommand.class);
 		registerCommand(ProcessItemsCommand.class);
 		registerCommand(CompressPagesCommand.class);
+		registerCommand(UpdateItemStatus.class);
 	}
 
 	private static void registerCommand(Class<? extends CommandLineCommand> clazz) {
@@ -73,6 +77,11 @@ public class BHLIndexer {
 	 */
 	public static void main(String[] args) throws Exception {
 		
+		System.setProperty("java.util.logging.config.file", "logging.properties");
+		
+		Logger logger = LoggerFactory.getLogger("");
+	    logger.info("Hello World");
+	    
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				log("Shutting down.");

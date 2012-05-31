@@ -29,7 +29,7 @@ public class IndexerOptions {
     private boolean _indexDocCacheOnly;
     private String _sourceFilename;
     private String _docCachePath;
-    private String _solrServerUrl;  
+    private String _solrServerUrl;
     private String _outputFile;    
     private int _jobThreads;    
     private String _itemFilter;
@@ -41,10 +41,10 @@ public class IndexerOptions {
         
         _indexDocCacheOnly = Boolean.parseBoolean(line.getOptionValue("indexlocalonly", "false"));
         
-        _sourceFilename = line.getOptionValue("sourcefile", "BHLExtract.csv");
+        _sourceFilename = line.getOptionValue("sourcefile", "");
         
         _docCachePath = line.getOptionValue("doccache", "/data/bhl-ftindex/doccache");
-        _solrServerUrl = line.getOptionValue("solrserver", "http://localhost:8983/solr");
+        _solrServerUrl = line.getOptionValue("solrserver", "http://localhost:8983/solr");        
         _jobThreads = Integer.parseInt(line.getOptionValue("threads", "1"));
         
         _outputFile = line.getOptionValue("o", "out.txt");
@@ -91,7 +91,7 @@ public class IndexerOptions {
     public void setSolrServerURL(String url) {
         _solrServerUrl = url;
     }
-       
+           
     public int getThreadCount() {
     	return _jobThreads;
     }

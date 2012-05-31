@@ -20,6 +20,7 @@ import au.org.ala.bhl.messages.AbstractItemMessage;
 import au.org.ala.bhl.messages.IndexText;
 import au.org.ala.bhl.messages.RetrieveAndIndexItemText;
 import au.org.ala.bhl.messages.RetrieveItemText;
+import au.org.ala.bhl.messages.Shutdown;
 import au.org.ala.bhl.messages.UpdateCacheControl;
 import au.org.ala.bhl.service.DocumentCacheService;
 import au.org.ala.bhl.service.IndexingService;
@@ -67,6 +68,8 @@ public class JobWorker extends AbstractBHLActor {
 		} else if (message instanceof IndexText) {
 			IndexText msg = (IndexText) message;
 			indexItem(msg);
+		} else if (message instanceof Shutdown) {			
+			_indexingService.shutdown();
 		} else {
 			throw new IllegalStateException("Invalid message: " + message);
 		}

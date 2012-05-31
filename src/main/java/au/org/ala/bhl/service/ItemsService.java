@@ -98,6 +98,17 @@ public class ItemsService extends H2Service {
     public void setItemStatus(String itemId, String status, int pageCount) {
         update("UPDATE ITEMS SET Status = ?, DateModified = ?, PageCount = ? WHERE ItemID = ?", status, now(), pageCount, itemId);
     }
+    
+    /**
+     * Update the status field of a particular item
+     * @param itemId
+     * @param status
+     * @param pageCount
+     */
+    public void setItemStatus(String itemId, String status) {
+        update("UPDATE ITEMS SET Status = ?, DateModified = ? WHERE ItemID = ?", status, now(), itemId);
+    }
+    
 
     /**
      * Creates the tables should they not already exist

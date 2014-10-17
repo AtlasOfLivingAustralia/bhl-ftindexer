@@ -142,4 +142,17 @@
 		</dependency>
 	</dependencies>
 
+        <distributionManagement>
+                <repository>
+	                <id>ala-repo</id>
+	                <name>Internal Releases</name>
+	                <url>http://ala-wonder.it.csiro.au/nexus/content/repositories/releases/</url>
+                </repository>
+                <snapshotRepository>
+	                <id>ala-repo</id>
+	                <name>Internal Releases</name>
+	                <url>http://ala-wonder.it.csiro.au/nexus/content/repositories/snapshots/</url>
+                </snapshotRepository>
+        </distributionManagement>
+
 </project>

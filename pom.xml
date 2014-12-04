@@ -1,19 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>au.org.ala</groupId>
+		<artifactId>ala-parent-pom</artifactId>
+		<version>1.0</version>
+	</parent>
+
 	<groupId>au.org.ala</groupId>
 	<artifactId>bhl-ftindexer</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<name>BHL Full Text Indexer</name>
-
-	<repositories>
-		<repository>
-			<id>typesafe</id>
-			<name>Typesafe Repository</name>
-			<url>http://repo.typesafe.com/typesafe/releases/</url>
-		</repository>
-	</repositories>
 
 	<build>
 		<plugins>
@@ -143,18 +141,4 @@
 			<version>1.8.5</version>
 		</dependency>
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>ala-repo</id>
-			<name>Internal Releases</name>
-			<url>http://nexus.ala.org.au/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>ala-repo</id>
-			<name>Internal Releases</name>
-			<url>http://nexus.ala.org.au/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 </project>

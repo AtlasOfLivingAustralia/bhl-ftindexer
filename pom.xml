@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>au.org.ala</groupId>
 		<artifactId>ala-parent-pom</artifactId>
-		<version>1.0</version>
+		<version>14</version>
 	</parent>
 
 	<groupId>au.org.ala</groupId>
@@ -117,9 +117,9 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.13.1</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
